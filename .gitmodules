@@ -1,0 +1,9 @@
+[submodule "agy-vispatcher"]
+	path = agy-vispatcher
+	url = https://github.com/Vikyek/agy-vispatcher
+[submodule "agy-syncvault"]
+	path = agy-syncvault
+	url = https://github.com/Vikyek/agy-syncvault
+[submodule "toon-mcp"]
+	path = toon-mcp
+	url = https://github.com/Vikyek/toon-mcp
