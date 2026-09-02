@@ -1,12 +1,13 @@
 # Maintainer: Vikyek <https://github.com/Vikyek>
 pkgname=rogue-agent-singularity
-pkgver=1.0.0
-pkgrel=2
+pkgver=1.0.2
+pkgrel=1
 pkgdesc="Vikyek's Rogue Agent Singularity — Suite of autonomous multi-agent tools, orchestrators, and plugins for Antigravity (AGY)"
 arch=('any')
 url="https://github.com/Vikyek/rogue-agent-singularity"
 license=('MIT')
 depends=('python' 'git' 'bash')
+makedepends=('git' 'make')
 optdepends=(
     'agv-dispatcher: Token-efficient task dispatcher & self-scaling orchestrator'
     'jules-vanager: Google Jules API Manager, Listener Daemon, TUI, and Conky HUD'
@@ -18,12 +19,5 @@ sha256sums=('SKIP' 'SKIP' 'SKIP')
 
 package() {
     cd "$pkgname-$pkgver"
-    install -Dm755 "$srcdir/vras-submodule" "$pkgdir/usr/bin/vras-submodule"
-    ln -s vras-submodule "$pkgdir/usr/bin/vras"
-
-    install -Dm644 "$srcdir/vras-submodule.1" "$pkgdir/usr/share/man/man1/vras-submodule.1"
-    ln -s vras-submodule.1 "$pkgdir/usr/share/man/man1/vras.1"
-
-    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
-    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    make install DESTDIR="$pkgdir" PREFIX=/usr
 }
