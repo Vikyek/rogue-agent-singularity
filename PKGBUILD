@@ -6,8 +6,10 @@ pkgdesc="Vikyek's Rouge Agent Singularity — Suite of autonomous multi-agent to
 arch=('any')
 url="https://github.com/Vikyek/rouge-agent-singularity"
 license=('MIT')
-depends=('python' 'git' 'agv-dispatcher' 'jules-vanager')
+depends=('python' 'git')
 optdepends=(
+    'agv-dispatcher: Token-efficient task dispatcher & self-scaling orchestrator'
+    'jules-vanager: Google Jules API Manager, Listener Daemon, TUI, and Conky HUD'
     'toon-mcp: TOON-format token optimization MCP server'
 )
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
