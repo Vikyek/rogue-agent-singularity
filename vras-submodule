@@ -6,12 +6,18 @@ set -euo pipefail
 
 # Locate VRAS root directory (supports symlinks and global installs)
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
-if [ -d "$SCRIPT_DIR/.git" ]; then
+if [ -n "${VRAS_ROOT:-}" ]; then
+    :
+elif [ -d "$SCRIPT_DIR/.git" ]; then
     VRAS_ROOT="$SCRIPT_DIR"
 elif [ -d "$HOME/.gemini/config/plugins/rogue-agent-singularity/.git" ]; then
     VRAS_ROOT="$HOME/.gemini/config/plugins/rogue-agent-singularity"
 elif [ -d "$HOME/Projects/rogue-agent-singularity/.git" ]; then
     VRAS_ROOT="$HOME/Projects/rogue-agent-singularity"
+elif [ -d "/usr/share/rogue-agent-singularity" ]; then
+    VRAS_ROOT="/usr/share/rogue-agent-singularity"
+elif [ -d "/usr/local/share/rogue-agent-singularity" ]; then
+    VRAS_ROOT="/usr/local/share/rogue-agent-singularity"
 else
     VRAS_ROOT="$PWD"
 fi
