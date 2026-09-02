@@ -1,3 +1,4 @@
 package.json
 .codegraph/
 *.log
+.vault_credentials.env

@@ -13,7 +13,7 @@ optdepends=(
     'agv-syncengine: Preference vault sync template and conflict resolution engine'
     'toon-mcp: TOON-format token optimization MCP server'
 )
-source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz" "vras-submodule" "man1/vras-submodule.1")
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz" "vras-submodule" "vras-submodule.1::man1/vras-submodule.1")
 sha256sums=('SKIP' 'SKIP' 'SKIP')
 
 package() {
