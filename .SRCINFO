@@ -1,7 +1,7 @@
 pkgbase = rogue-agent-singularity
 	pkgdesc = Vikyek's Rogue Agent Singularity — Suite of autonomous multi-agent tools, orchestrators, and plugins for Antigravity (AGY)
-	pkgver = 1.0.0
-	pkgrel = 2
+	pkgver = 1.0.1
+	pkgrel = 1
 	url = https://github.com/Vikyek/rogue-agent-singularity
 	arch = any
 	license = MIT
@@ -12,7 +12,7 @@ pkgbase = rogue-agent-singularity
 	optdepends = jules-vanager: Google Jules API Manager, Listener Daemon, TUI, and Conky HUD
 	optdepends = agv-syncengine: Preference vault sync template and conflict resolution engine
 	optdepends = toon-mcp: TOON-format token optimization MCP server
-	source = rogue-agent-singularity-1.0.0.tar.gz::https://github.com/Vikyek/rogue-agent-singularity/archive/refs/tags/v1.0.0.tar.gz
+	source = rogue-agent-singularity-1.0.1.tar.gz::https://github.com/Vikyek/rogue-agent-singularity/archive/refs/tags/v1.0.1.tar.gz
 	sha256sums = SKIP
 
 pkgname = rogue-agent-singularity

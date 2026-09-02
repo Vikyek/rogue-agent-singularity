@@ -1,7 +1,7 @@
 # Maintainer: Vikyek <https://github.com/Vikyek>
 pkgname=rogue-agent-singularity
-pkgver=1.0.0
-pkgrel=2
+pkgver=1.0.1
+pkgrel=1
 pkgdesc="Vikyek's Rogue Agent Singularity — Suite of autonomous multi-agent tools, orchestrators, and plugins for Antigravity (AGY)"
 arch=('any')
 url="https://github.com/Vikyek/rogue-agent-singularity"
