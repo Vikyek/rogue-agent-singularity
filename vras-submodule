@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+# vras-submodule — Simple CLI to list, enable, disable, or toggle VRAS submodules
+# Usage: vras-submodule [list|enable|disable|toggle] [module]
+
+set -euo pipefail
+
+# Locate VRAS root directory (supports symlinks and global installs)
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+if [ -d "$SCRIPT_DIR/.git" ]; then
+    VRAS_ROOT="$SCRIPT_DIR"
+elif [ -d "$HOME/.gemini/config/plugins/rouge-agent-singularity/.git" ]; then
+    VRAS_ROOT="$HOME/.gemini/config/plugins/rouge-agent-singularity"
+elif [ -d "$HOME/Projects/rouge-agent-singularity/.git" ]; then
+    VRAS_ROOT="$HOME/Projects/rouge-agent-singularity"
+else
+    VRAS_ROOT="$PWD"
+fi
+
+cd "$VRAS_ROOT"
+
+# Available module mappings
+declare -A MODULES=(
+    ["dispatcher"]="agv-dispatcher"
+    ["agv-dispatcher"]="agv-dispatcher"
+    ["jules"]="jules-vanager"
+    ["jules-vanager"]="jules-vanager"
+    ["sync"]="agv-syncengine"
+    ["agv-syncengine"]="agv-syncengine"
+    ["toon"]="toon-mcp"
+    ["toon-mcp"]="toon-mcp"
+)
+
+# Canonical module list
+ALL_MODULES=("agv-dispatcher" "jules-vanager" "agv-syncengine" "toon-mcp")
+
+# Status check helper
+is_enabled() {
+    local mod="$1"
+    local status
+    status=$(git submodule status "$mod" 2>/dev/null || echo "-")
+    if [[ "$status" =~ ^- ]]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+cmd_list() {
+    echo "🌌 Vikyek's Rouge Agent Singularity — Submodules:"
+    echo ""
+    for mod in "${ALL_MODULES[@]}"; do
+        if is_enabled "$mod"; then
+            printf "  \e[32m● ENABLED \e[0m %-20s (%s)\n" "$mod" "$(git submodule status "$mod" | awk '{print $1}')"
+        else
+            printf "  \e[31m○ DISABLED\e[0m %-20s (uninitialized)\n" "$mod"
+        fi
+    done
+    echo ""
+}
+
+cmd_enable() {
+    local target="${1:-all}"
+    if [ "$target" = "all" ]; then
+        for mod in "${ALL_MODULES[@]}"; do
+            echo "Activating $mod..."
+            git submodule update --init --recursive "$mod"
+        done
+    else
+        local mod="${MODULES[$target]:-$target}"
+        echo "Activating $mod..."
+        git submodule update --init --recursive "$mod"
+    fi
+    cmd_list
+}
+
+cmd_disable() {
+    local target="${1:-all}"
+    if [ "$target" = "all" ]; then
+        for mod in "${ALL_MODULES[@]}"; do
+            echo "Deactivating $mod..."
+            git submodule deinit -f "$mod" 2>/dev/null || true
+        done
+    else
+        local mod="${MODULES[$target]:-$target}"
+        echo "Deactivating $mod..."
+        git submodule deinit -f "$mod"
+    fi
+    cmd_list
+}
+
+cmd_toggle() {
+    local target="${1:-}"
+    if [ -z "$target" ]; then
+        echo "Usage: vras-submodule toggle <module>"
+        exit 1
+    fi
+    local mod="${MODULES[$target]:-$target}"
+    if is_enabled "$mod"; then
+        cmd_disable "$mod"
+    else
+        cmd_enable "$mod"
+    fi
+}
+
+# Command dispatch
+ACTION="${1:-list}"
+MODULE="${2:-}"
+
+case "$ACTION" in
+    list|status)
+        cmd_list
+        ;;
+    enable|on|add)
+        cmd_enable "$MODULE"
+        ;;
+    disable|off|rm|remove)
+        cmd_disable "$MODULE"
+        ;;
+    toggle|switch)
+        cmd_toggle "$MODULE"
+        ;;
+    -h|--help|help)
+        echo "Usage: vras-submodule [list|enable|disable|toggle] [module]"
+        echo ""
+        echo "Commands:"
+        echo "  list                     Show status of all submodules"
+        echo "  enable  <module|all>     Enable and initialize submodule"
+        echo "  disable <module|all>     Disable and deinitialize submodule"
+        echo "  toggle  <module>         Toggle module on or off"
+        echo ""
+        echo "Modules: dispatcher, jules, sync, toon, all"
+        ;;
+    *)
+        cmd_toggle "$ACTION"
+        ;;
+esac
