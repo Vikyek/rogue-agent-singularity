@@ -7,14 +7,8 @@ echo "Initializing VRAS Environment..."
 
 # 1. Ensure environment variables template exists
 if [ ! -f .vault_credentials.env ]; then
-    echo "Creating .vault_credentials.env template..."
-    cat << 'ENV_EOF' > .vault_credentials.env
-# Google Jules API Configuration
-JULES_API_KEY=""
-
-# Session Configuration
-JULES_SESSION_ID=""
-ENV_EOF
+    echo "Creating .vault_credentials.env from .env.example template..."
+    cp .env.example .vault_credentials.env
     echo "Please populate .vault_credentials.env with your keys."
 fi
 
