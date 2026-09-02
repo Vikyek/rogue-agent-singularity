@@ -10,7 +10,7 @@ A unified suite of autonomous multi-agent tools, orchestrators, integration plug
 | :--- | :--- | :--- |
 | **`agv-dispatcher`** | Token-efficient 5-tier task dispatcher, dual-provider quota balancing, and MCP tool schema pruning system. | [`Vikyek/agv-dispatcher`](https://github.com/Vikyek/agv-dispatcher) |
 | **`jules-vanager`** | Standalone Google Jules API Manager, Listener Daemon, Interactive TUI, and Conky HUD widget. | [`Vikyek/jules-vanager`](https://github.com/Vikyek/jules-vanager) |
-| **`agv-syncvault`** | Private rule vault, learned preferences, and configuration synchronization engine. | [`Vikyek/agv-syncvault`](https://github.com/Vikyek/agv-syncvault) |
+| **`agv-syncengine`** | Public template & engine for rule compaction, private vault synchronization, and conflict resolution. | [`Vikyek/agv-syncengine`](https://github.com/Vikyek/agv-syncengine) |
 | **`toon-mcp`** | Structured payload token optimization MCP server (TOON format). | [`Vikyek/toon-mcp`](https://github.com/Vikyek/toon-mcp) |
 
 ---

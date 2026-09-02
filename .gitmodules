@@ -1,9 +1,9 @@
 [submodule "agv-dispatcher"]
 	path = agv-dispatcher
 	url = https://github.com/Vikyek/agv-dispatcher.git
-[submodule "agv-syncvault"]
-	path = agy-syncvault
-	url = https://github.com/Vikyek/agv-syncvault.git
+[submodule "agv-syncengine"]
+	path = agv-syncengine
+	url = https://github.com/Vikyek/agv-syncengine.git
 [submodule "toon-mcp"]
 	path = toon-mcp
 	url = https://github.com/Vikyek/toon-mcp.git
