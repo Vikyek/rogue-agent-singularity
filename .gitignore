@@ -1,1 +1,3 @@
 package.json
+.codegraph/
+*.log

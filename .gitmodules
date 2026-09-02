@@ -1,9 +1,12 @@
-[submodule "agy-vispatcher"]
-	path = agy-vispatcher
-	url = https://github.com/Vikyek/agy-vispatcher
-[submodule "agy-syncvault"]
+[submodule "agv-dispatcher"]
+	path = agv-dispatcher
+	url = https://github.com/Vikyek/agv-dispatcher.git
+[submodule "agv-syncvault"]
 	path = agy-syncvault
-	url = https://github.com/Vikyek/agy-syncvault
+	url = https://github.com/Vikyek/agv-syncvault.git
 [submodule "toon-mcp"]
 	path = toon-mcp
-	url = https://github.com/Vikyek/toon-mcp
+	url = https://github.com/Vikyek/toon-mcp.git
+[submodule "jules-vanager"]
+	path = jules-vanager
+	url = https://github.com/Vikyek/jules-vanager.git
