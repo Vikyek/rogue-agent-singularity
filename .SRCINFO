@@ -12,7 +12,7 @@ pkgbase = rogue-agent-singularity
 	optdepends = jules-vanager: Google Jules API Manager, Listener Daemon, TUI, and Conky HUD
 	optdepends = agv-syncengine: Preference vault sync template and conflict resolution engine
 	optdepends = toon-mcp: TOON-format token optimization MCP server
-	source = rogue-agent-singularity-1.0.0.tar.gz::https://github.com/Vikyek/rogue-agent-singularity/archive/refs/tags/v1.0.0.tar.gz
+	source = git+https://github.com/Vikyek/rogue-agent-singularity.git#tag=v1.0.0
 	sha256sums = SKIP
 
 pkgname = rogue-agent-singularity

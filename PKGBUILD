@@ -13,17 +13,10 @@ optdepends=(
     'agv-syncengine: Preference vault sync template and conflict resolution engine'
     'toon-mcp: TOON-format token optimization MCP server'
 )
-source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+source=("git+https://github.com/Vikyek/rogue-agent-singularity.git#tag=v$pkgver")
 sha256sums=('SKIP')
 
 package() {
-    cd "$pkgname-$pkgver"
-    install -Dm755 vras-submodule "$pkgdir/usr/bin/vras-submodule"
-    ln -s vras-submodule "$pkgdir/usr/bin/vras"
-
-    install -Dm644 man1/vras-submodule.1 "$pkgdir/usr/share/man/man1/vras-submodule.1"
-    ln -s vras-submodule.1 "$pkgdir/usr/share/man/man1/vras.1"
-
-    install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
-    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    cd "$pkgname"
+    make install DESTDIR="$pkgdir" PREFIX=/usr
 }
