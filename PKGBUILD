@@ -21,6 +21,9 @@ package() {
     install -Dm755 vras-submodule "$pkgdir/usr/bin/vras-submodule"
     ln -s vras-submodule "$pkgdir/usr/bin/vras"
 
+    install -Dm644 man1/vras-submodule.1 "$pkgdir/usr/share/man/man1/vras-submodule.1"
+    ln -s vras-submodule.1 "$pkgdir/usr/share/man/man1/vras.1"
+
     install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
     install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }

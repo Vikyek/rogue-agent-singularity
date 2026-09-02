@@ -1,4 +1,4 @@
-# 🌌 Vikyek's Rouge Agent Singularity
+# 🌌 Vikyek's Rouge Agent Singularity (VRAS)
 
 A unified suite of autonomous multi-agent tools, orchestrators, integration plugins, and configuration vault synchronization systems built for Antigravity (AGY).
 
@@ -15,9 +15,28 @@ A unified suite of autonomous multi-agent tools, orchestrators, integration plug
 
 ---
 
+## 🎛️ Submodule Management (`vras` / `vras-submodule` CLI)
+
+Manage and toggle VRAS submodules easily using the built-in `vras` command-line utility:
+
+```bash
+vras [list|enable|disable|toggle] [module]
+```
+
+### Commands:
+- `vras list`: Display status (`ENABLED`/`DISABLED`) and git commit SHA of all submodules.
+- `vras enable <module|all>`: Initialize and checkout the specified submodule (or all).
+- `vras disable <module|all>`: Deinitialize and clear the specified submodule (or all).
+- `vras toggle <module>`: Toggle the specified submodule on or off.
+
+### Module Shortcuts:
+`dispatcher` (`agv-dispatcher`), `jules` (`jules-vanager`), `sync` (`agv-syncengine`), `toon` (`toon-mcp`), `all`.
+
+---
+
 ## ⚡ Maximum Token Savings Setup (`toon-mcp` + `agv-dispatcher`)
 
-To achieve maximum token savings (35-60% payload compression):
+To achieve maximum token savings (35–60% payload compression):
 
 1. **Install `toon-mcp` into isolated virtual environment**:
    ```bash
@@ -49,6 +68,12 @@ Clone the full ecosystem with submodules:
 
 ```bash
 git clone --recursive https://github.com/Vikyek/rouge-agent-singularity.git ~/.gemini/config/plugins/rouge-agent-singularity
+```
+
+### Man Page & CLI Access
+```bash
+man vras-submodule
+vras --help
 ```
 
 ---

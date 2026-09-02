@@ -1,0 +1,57 @@
+.TH VRAS-SUBMODULE 1 "September 2026" "v1.0.0" "Vikyek's Rouge Agent Singularity Manual"
+.SH NAME
+vras-submodule, vras \- Manage and toggle VRAS submodules easily
+.SH SYNOPSIS
+.B vras-submodule
+[\fICOMMAND\fR] [\fIMODULE\fR]
+.br
+.B vras
+[\fICOMMAND\fR] [\fIMODULE\fR]
+.SH DESCRIPTION
+\fBvras-submodule\fR is a lightweight CLI utility designed to inspect, enable, disable, and toggle submodules within Vikyek's Rouge Agent Singularity (VRAS).
+.SH COMMANDS
+.TP
+.B list, status
+Display status (ENABLED/DISABLED) and git commit SHA of all registered submodules.
+.TP
+.B enable [MODULE|all], on, add
+Initialize and checkout the specified submodule (or all submodules).
+.TP
+.B disable [MODULE|all], off, rm, remove
+Deinitialize and clear the working tree of the specified submodule (or all submodules).
+.TP
+.B toggle MODULE, switch
+Toggle the status of the specified submodule on or off.
+.SH MODULE SHORTCUTS
+.TP
+.B dispatcher, agv-dispatcher
+Token-efficient task dispatcher & self-scaling orchestrator.
+.TP
+.B jules, jules-vanager
+Google Jules API Manager, Listener Daemon, TUI, and Conky HUD.
+.TP
+.B sync, agv-syncengine
+Preference vault sync template and conflict resolution engine.
+.TP
+.B toon, toon-mcp
+TOON-format token optimization MCP server.
+.TP
+.B all
+Operate on all submodules simultaneously.
+.SH EXAMPLES
+.TP
+.B vras list
+Show status of all submodules.
+.TP
+.B vras enable toon
+Enable the toon-mcp submodule.
+.TP
+.B vras disable jules
+Disable the jules-vanager submodule.
+.TP
+.B vras toggle dispatcher
+Toggle the agv-dispatcher submodule state.
+.SH AUTHOR
+Written by Vikyek <https://github.com/Vikyek>.
+.SH REPORTING BUGS
+Report issues at <https://github.com/Vikyek/rouge-agent-singularity/issues>.
