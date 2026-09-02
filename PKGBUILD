@@ -13,15 +13,15 @@ optdepends=(
     'agv-syncengine: Preference vault sync template and conflict resolution engine'
     'toon-mcp: TOON-format token optimization MCP server'
 )
-source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('SKIP')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz" "vras-submodule" "man1/vras-submodule.1")
+sha256sums=('SKIP' 'SKIP' 'SKIP')
 
 package() {
     cd "$pkgname-$pkgver"
-    install -Dm755 vras-submodule "$pkgdir/usr/bin/vras-submodule"
+    install -Dm755 "$srcdir/vras-submodule" "$pkgdir/usr/bin/vras-submodule"
     ln -s vras-submodule "$pkgdir/usr/bin/vras"
 
-    install -Dm644 man1/vras-submodule.1 "$pkgdir/usr/share/man/man1/vras-submodule.1"
+    install -Dm644 "$srcdir/vras-submodule.1" "$pkgdir/usr/share/man/man1/vras-submodule.1"
     ln -s vras-submodule.1 "$pkgdir/usr/share/man/man1/vras.1"
 
     install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
