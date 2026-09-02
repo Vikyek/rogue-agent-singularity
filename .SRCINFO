@@ -8,6 +8,7 @@ pkgbase = rogue-agent-singularity
 	depends = python
 	depends = git
 	depends = bash
+	makedepends = git
 	optdepends = agv-dispatcher: Token-efficient task dispatcher & self-scaling orchestrator
 	optdepends = jules-vanager: Google Jules API Manager, Listener Daemon, TUI, and Conky HUD
 	optdepends = agv-syncengine: Preference vault sync template and conflict resolution engine

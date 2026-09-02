@@ -7,6 +7,7 @@ arch=('any')
 url="https://github.com/Vikyek/rogue-agent-singularity"
 license=('MIT')
 depends=('python' 'git' 'bash')
+makedepends=('git')
 optdepends=(
     'agv-dispatcher: Token-efficient task dispatcher & self-scaling orchestrator'
     'jules-vanager: Google Jules API Manager, Listener Daemon, TUI, and Conky HUD'

@@ -6,7 +6,7 @@ DESTDIR ?=
 all: submodules
 
 submodules:
-	@if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
+	@if [ -d .git ]; then \
 		echo "Initializing submodules..."; \
 		git submodule update --init --recursive; \
 	else \
