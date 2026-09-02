@@ -1,4 +1,4 @@
-# 🌌 Vikyek's Rouge Agent Singularity (VRAS)
+# 🌌 Vikyek's Rogue Agent Singularity (VRAS)
 
 A unified suite of autonomous multi-agent tools, orchestrators, integration plugins, and configuration vault synchronization systems built for Antigravity (AGY).
 
@@ -41,7 +41,7 @@ To achieve maximum token savings (35–60% payload compression):
 1. **Install `toon-mcp` into isolated virtual environment**:
    ```bash
    python3 -m venv ~/.local/share/toon-venv
-   ~/.local/share/toon-venv/bin/pip install -e ~/.gemini/config/plugins/rouge-agent-singularity/toon-mcp
+   ~/.local/share/toon-venv/bin/pip install -e ~/.gemini/config/plugins/rogue-agent-singularity/toon-mcp
    ```
 
 2. **Register `toon` MCP Server**:
@@ -67,7 +67,7 @@ To achieve maximum token savings (35–60% payload compression):
 Clone the full ecosystem with submodules:
 
 ```bash
-git clone --recursive https://github.com/Vikyek/rouge-agent-singularity.git ~/.gemini/config/plugins/rouge-agent-singularity
+git clone --recursive https://github.com/Vikyek/rogue-agent-singularity.git ~/.gemini/config/plugins/rogue-agent-singularity
 ```
 
 ### Man Page & CLI Access

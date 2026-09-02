@@ -8,10 +8,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 if [ -d "$SCRIPT_DIR/.git" ]; then
     VRAS_ROOT="$SCRIPT_DIR"
-elif [ -d "$HOME/.gemini/config/plugins/rouge-agent-singularity/.git" ]; then
-    VRAS_ROOT="$HOME/.gemini/config/plugins/rouge-agent-singularity"
-elif [ -d "$HOME/Projects/rouge-agent-singularity/.git" ]; then
-    VRAS_ROOT="$HOME/Projects/rouge-agent-singularity"
+elif [ -d "$HOME/.gemini/config/plugins/rogue-agent-singularity/.git" ]; then
+    VRAS_ROOT="$HOME/.gemini/config/plugins/rogue-agent-singularity"
+elif [ -d "$HOME/Projects/rogue-agent-singularity/.git" ]; then
+    VRAS_ROOT="$HOME/Projects/rogue-agent-singularity"
 else
     VRAS_ROOT="$PWD"
 fi
@@ -46,7 +46,7 @@ is_enabled() {
 }
 
 cmd_list() {
-    echo "🌌 Vikyek's Rouge Agent Singularity — Submodules:"
+    echo "🌌 Vikyek's Rogue Agent Singularity — Submodules:"
     echo ""
     for mod in "${ALL_MODULES[@]}"; do
         if is_enabled "$mod"; then

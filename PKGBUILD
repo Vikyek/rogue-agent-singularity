@@ -1,10 +1,10 @@
 # Maintainer: Vikyek <https://github.com/Vikyek>
-pkgname=rouge-agent-singularity
+pkgname=rogue-agent-singularity
 pkgver=1.0.0
 pkgrel=2
-pkgdesc="Vikyek's Rouge Agent Singularity — Suite of autonomous multi-agent tools, orchestrators, and plugins for Antigravity (AGY)"
+pkgdesc="Vikyek's Rogue Agent Singularity — Suite of autonomous multi-agent tools, orchestrators, and plugins for Antigravity (AGY)"
 arch=('any')
-url="https://github.com/Vikyek/rouge-agent-singularity"
+url="https://github.com/Vikyek/rogue-agent-singularity"
 license=('MIT')
 depends=('python' 'git' 'bash')
 optdepends=(
