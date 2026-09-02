@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # vras-submodule — Simple CLI to list, enable, disable, or toggle VRAS submodules
-# Usage: vras-submodule [list|enable|disable|toggle] [module]
+# Usage: vras-submodule [list|enable|disable|toggle|install] [module]
 
 set -euo pipefail
 
@@ -110,7 +110,7 @@ case "$ACTION" in
     list|status)
         cmd_list
         ;;
-    enable|on|add)
+    enable|install|on|add)
         cmd_enable "$MODULE"
         ;;
     disable|off|rm|remove)
@@ -120,11 +120,11 @@ case "$ACTION" in
         cmd_toggle "$MODULE"
         ;;
     -h|--help|help)
-        echo "Usage: vras-submodule [list|enable|disable|toggle] [module]"
+        echo "Usage: vras-submodule [list|enable|disable|toggle|install] [module]"
         echo ""
         echo "Commands:"
         echo "  list                     Show status of all submodules"
-        echo "  enable  <module|all>     Enable and initialize submodule"
+        echo "  enable, install <module|all> Enable and initialize submodule"
         echo "  disable <module|all>     Disable and deinitialize submodule"
         echo "  toggle  <module>         Toggle module on or off"
         echo ""
