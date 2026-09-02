@@ -2,7 +2,7 @@
 
 # Determine repository directory and change to it
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR" || return 1 2>/dev/null
+cd "$SCRIPT_DIR" || { return 1 2>/dev/null || exit 1; }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     echo "WARNING: Run 'source ./jules_setup.sh' to export environment variables in your current shell."
@@ -17,35 +17,35 @@ if [ ! -f .vault_credentials.env ]; then
 fi
 
 if [ -f .vault_credentials.env ]; then
-    set -a
-    source .vault_credentials.env
-    set +a
+    # Parse env file without altering shell configuration flags
+    while IFS= read -r line || [ -n "$line" ]; do
+        # Ignore comments and empty lines
+        if [[ ! "$line" =~ ^# ]] && [[ -n "$line" ]]; then
+            export "$line"
+        fi
+    done < .vault_credentials.env
 fi
 
 if [ -z "${JULES_API_KEY}" ]; then
     echo "ERROR: JULES_API_KEY is empty. Please populate it in .vault_credentials.env"
-    if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-        return 1 2>/dev/null
-    else
-        kill -TERM $$
-    fi
+    return 1 2>/dev/null || exit 1
 fi
 
 export JULES_SESSION_ID="${JULES_SESSION_ID:-17849353354405986700}"
 
 echo "Initializing submodules..."
-git submodule update --init --recursive || { echo "Failed to initialize submodules"; if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then return 1 2>/dev/null; else kill -TERM $$; fi; }
+git submodule update --init --recursive || { echo "Failed to initialize submodules"; return 1 2>/dev/null || exit 1; }
 
 VENV_DIR="${HOME}/.local/share/toon-venv"
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating isolated virtual environment for toon-mcp at $VENV_DIR..."
-    python3 -m venv "$VENV_DIR" || { echo "Failed to create venv"; if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then return 1 2>/dev/null; else kill -TERM $$; fi; }
+    python3 -m venv "$VENV_DIR" || { echo "Failed to create venv"; return 1 2>/dev/null || exit 1; }
 fi
 
 echo "Installing toon-mcp..."
-"$VENV_DIR/bin/pip" install -e "$SCRIPT_DIR/toon-mcp/" || { echo "Failed to install toon-mcp"; if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then return 1 2>/dev/null; else kill -TERM $$; fi; }
+"$VENV_DIR/bin/pip" install -e "$SCRIPT_DIR/toon-mcp/" || { echo "Failed to install toon-mcp"; return 1 2>/dev/null || exit 1; }
 
 echo "Installing testing dependencies..."
-"$VENV_DIR/bin/pip" install pytest || { echo "Failed to install pytest"; if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then return 1 2>/dev/null; else kill -TERM $$; fi; }
+"$VENV_DIR/bin/pip" install pytest || { echo "Failed to install pytest"; return 1 2>/dev/null || exit 1; }
 
 echo "Setup completed successfully!"
