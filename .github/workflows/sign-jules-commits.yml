@@ -6,8 +6,8 @@ on:
 
 jobs:
   sign:
-    # Match Jules bot actors or Jules branch naming conventions
-    if: github.actor == 'google-jules[bot]' || startsWith(github.head_ref, 'jules') || startsWith(github.head_ref, 'bolt-') || startsWith(github.head_ref, 'prism/') || startsWith(github.head_ref, 'sentinel-') || startsWith(github.head_ref, 'archivist-') || contains(github.event.pull_request.body, 'Jules')
+    # Match Jules bot actors or Jules branch naming conventions AND require GPG_PRIVATE_KEY secret
+    if: (github.actor == 'google-jules[bot]' || startsWith(github.head_ref, 'jules') || startsWith(github.head_ref, 'bolt-') || startsWith(github.head_ref, 'prism/') || startsWith(github.head_ref, 'sentinel-') || startsWith(github.head_ref, 'archivist-') || contains(github.event.pull_request.body, 'Jules')) && secrets.GPG_PRIVATE_KEY != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout PR Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
