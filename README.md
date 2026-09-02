@@ -15,6 +15,34 @@ A unified suite of autonomous multi-agent tools, orchestrators, integration plug
 
 ---
 
+## ⚡ Maximum Token Savings Setup (`toon-mcp` + `agv-dispatcher`)
+
+To achieve maximum token savings (35-60% payload compression):
+
+1. **Install `toon-mcp` into isolated virtual environment**:
+   ```bash
+   python3 -m venv ~/.local/share/toon-venv
+   ~/.local/share/toon-venv/bin/pip install -e ~/.gemini/config/plugins/rouge-agent-singularity/toon-mcp
+   ```
+
+2. **Register `toon` MCP Server**:
+   Add to `~/.gemini/config/mcp_config.json`:
+   ```json
+   {
+     "mcpServers": {
+       "toon": {
+         "command": "/home/v/.local/share/toon-venv/bin/toon-mcp-server",
+         "args": []
+       }
+     }
+   }
+   ```
+
+3. **Orchestrator Activation**:
+   `agv-dispatcher` automatically writes pruned MCP configuration templates inside worker subagent workspaces, exposing `toon` tools (`convert_to_toon` / `convert_to_json`) for high-volume JSON data payloads.
+
+---
+
 ## 🛠️ Setup & Installation
 
 Clone the full ecosystem with submodules:
