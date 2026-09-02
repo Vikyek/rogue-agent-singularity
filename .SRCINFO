@@ -1,0 +1,16 @@
+pkgbase = rouge-agent-singularity
+	pkgdesc = Vikyek's Rouge Agent Singularity — Suite of autonomous multi-agent tools, orchestrators, and plugins for Antigravity (AGY)
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://github.com/Vikyek/rouge-agent-singularity
+	arch = any
+	license = MIT
+	depends = python
+	depends = git
+	depends = agv-dispatcher
+	depends = jules-vanager
+	optdepends = toon-mcp: TOON-format token optimization MCP server
+	source = rouge-agent-singularity-1.0.0.tar.gz::https://github.com/Vikyek/rouge-agent-singularity/archive/refs/tags/v1.0.0.tar.gz
+	sha256sums = SKIP
+
+pkgname = rouge-agent-singularity
