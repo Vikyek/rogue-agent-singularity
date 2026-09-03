@@ -42,8 +42,12 @@ ALL_MODULES=("agv-dispatcher" "jules-vanager" "agv-syncengine" "toon-mcp")
 # Status check helper
 is_enabled() {
     local mod="$1"
-    local status
-    status=$(git submodule status "$mod" 2>/dev/null || echo "-")
+    local status="${2:-}"
+
+    if [ -z "$status" ]; then
+        status=$(git submodule status "$mod" 2>/dev/null || echo "-")
+    fi
+
     if [[ "$status" =~ ^- ]]; then
         return 1
     else
@@ -54,9 +58,22 @@ is_enabled() {
 cmd_list() {
     echo "🌌 Vikyek's Rogue Agent Singularity — Submodules:"
     echo ""
+
+    # Optimize: pre-fetch status of all submodules once
+    local all_status
+    all_status=$(git submodule status 2>/dev/null || true)
+
     for mod in "${ALL_MODULES[@]}"; do
-        if is_enabled "$mod"; then
-            printf "  \e[32m● ENABLED \e[0m %-20s (%s)\n" "$mod" "$(git submodule status "$mod" | awk '{print $1}')"
+        # Extract the line for this specific module from the pre-fetched status
+        local mod_line
+        mod_line=$(echo "$all_status" | grep -E "[[:space:]]$mod([[:space:]]|$)" || echo "-")
+
+        # Pass the extracted line to is_enabled to avoid a redundant git call
+        if is_enabled "$mod" "$mod_line"; then
+            # Extract commit hash from the line, preserving any + or U prefixes as in original script
+            local commit_hash
+            commit_hash=$(echo "$mod_line" | awk '{print $1}')
+            printf "  \e[32m● ENABLED \e[0m %-20s (%s)\n" "$mod" "$commit_hash"
         else
             printf "  \e[31m○ DISABLED\e[0m %-20s (uninitialized)\n" "$mod"
         fi
