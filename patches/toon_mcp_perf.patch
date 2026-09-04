@@ -1,0 +1,21 @@
+--- a/src/toon_converter.py
++++ b/src/toon_converter.py
+@@ -177,11 +177,14 @@
+         if not arr:
+             return []
+
+-        if all(isinstance(item, dict) for item in arr):
+-            key_sets = [set(item.keys()) for item in arr]
+-            if len({tuple(sorted(ks)) for ks in key_sets}) == 1:
++        # Optimization: use fast dict_keys comparison instead of sets and tuples to avoid O(N) redundant allocations
++        first_item = arr[0]
++        if isinstance(first_item, dict):
++            first_keys = first_item.keys()
++            # Fast fail check if all items are dicts with the same keys as the first item
++            if all(isinstance(item, dict) and item.keys() == first_keys for item in arr):
+                 # All objects have identical keys — encode as schema + value rows
+-                keys = sorted(arr[0].keys())
++                keys = sorted(first_keys)
+                 compressed_keys = [self._abbrev_key(k) for k in keys]
+                 return {
+                     '_sch': compressed_keys,
