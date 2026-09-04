@@ -37,7 +37,7 @@ echo "Initializing submodules..."
 git submodule update --init --recursive || { echo "Failed to initialize submodules"; return 1 2>/dev/null || exit 1; }
 
 echo "Applying patches..."
-patch -N -p1 -d agv-dispatcher/modules/jules-vanager < "$SCRIPT_DIR/patches/jules_tui_ux_hints.patch" || true
+patch -N -p1 -d jules-vanager < "$SCRIPT_DIR/patches/jules_tui_ux_hints.patch"
 
 VENV_DIR="${HOME}/.local/share/toon-venv"
 if [ ! -d "$VENV_DIR" ]; then
