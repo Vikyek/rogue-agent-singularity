@@ -36,6 +36,11 @@ export JULES_SESSION_ID="${JULES_SESSION_ID:-17849353354405986700}"
 echo "Initializing submodules..."
 git submodule update --init --recursive || { echo "Failed to initialize submodules"; return 1 2>/dev/null || exit 1; }
 
+echo "Applying security patches..."
+if [ -f "$SCRIPT_DIR/patches/jules_manager.patch" ]; then
+    patch -N -p0 -d "$SCRIPT_DIR" < "$SCRIPT_DIR/patches/jules_manager.patch" || echo "Patch already applied or failed."
+fi
+
 VENV_DIR="${HOME}/.local/share/toon-venv"
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating isolated virtual environment for toon-mcp at $VENV_DIR..."
