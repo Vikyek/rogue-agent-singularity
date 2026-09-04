@@ -36,6 +36,7 @@ export JULES_SESSION_ID="${JULES_SESSION_ID:-17849353354405986700}"
 echo "Initializing submodules..."
 git submodule update --init --recursive || { echo "Failed to initialize submodules"; return 1 2>/dev/null || exit 1; }
 
+<<<<<<< HEAD
 # Apply patches to submodules where we cannot advance upstream pointers
 if [ -d "$SCRIPT_DIR/patches" ]; then
     echo "Applying patches..."
@@ -45,7 +46,7 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
             echo "Applying $patch_name..."
 
             # Apply jules_listener_injection.patch to agv-dispatcher/modules/jules-vanager submodule
-            if [[ "$patch_name" == "jules_listener_injection.patch" || "$patch_name" == jules-tui-*.patch ]]; then
+            if [[ "$patch_name" == "jules_listener_injection.patch" || "$patch_name" == jules-tui-*.patch || "$patch_name" == "jules_manager.patch" ]]; then
                 (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --forward < "$patch_file" || echo "Patch $patch_name might already be applied.")
             fi
 

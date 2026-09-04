@@ -1,0 +1,25 @@
+--- agv-dispatcher/modules/jules-vanager/jules_manager.py
++++ agv-dispatcher/modules/jules-vanager/jules_manager.py
+@@ -94,16 +94,19 @@
+
+ def get_session_activities(session_id):
+     """Retrieves activity log and questions for a session."""
+-    return _make_request(f"sessions/{session_id}/activities")
++    safe_session_id = urllib.parse.quote(session_id, safe="")
++    return _make_request(f"sessions/{safe_session_id}/activities")
+
+ def send_message(session_id, message_text):
+     """Sends a user response/message back to an active session."""
+     payload = {"prompt": message_text}
+-    return _make_request(f"sessions/{session_id}:sendMessage", method="POST", payload=payload)
++    safe_session_id = urllib.parse.quote(session_id, safe="")
++    return _make_request(f"sessions/{safe_session_id}:sendMessage", method="POST", payload=payload)
+
+ def archive_session(session_id):
+     """Archives a completed or handled session."""
+-    return _make_request(f"sessions/{session_id}:archive", method="POST")
++    safe_session_id = urllib.parse.quote(session_id, safe="")
++    return _make_request(f"sessions/{safe_session_id}:archive", method="POST")
+
+ def main():
+     parser = argparse.ArgumentParser(description="Google Jules API Manager")
