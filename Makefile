@@ -8,7 +8,7 @@ all: submodules
 submodules:
 	@if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
 		echo "Initializing submodules..."; \
-		git submodule update --init --recursive; \
+		git submodule update --init --recursive || echo "Warning: git submodule update failed (ignoring for offline builds)"; \
 	else \
 		echo "Not a git repository. Skipping submodule initialization."; \
 	fi

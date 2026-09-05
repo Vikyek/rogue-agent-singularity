@@ -43,7 +43,7 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
             patch_name=$(basename "$patch")
             if [[ "$patch_name" == jules-tui-*.patch ]]; then
                 # Apply patch to jules-vanager submodule
-                (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 -N < "$patch" || true)
+                (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --forward < "$patch" || echo "Patch applied or failed")
             fi
         fi
     done
