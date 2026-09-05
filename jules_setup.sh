@@ -49,3 +49,4 @@ echo "Installing testing dependencies..."
 "$VENV_DIR/bin/pip" install pytest || { echo "Failed to install pytest"; return 1 2>/dev/null || exit 1; }
 
 echo "Setup completed successfully!"
+git apply patches/0001-Bolt-Optimize-identical-keys-check-in-array-compress.patch --directory=toon-mcp

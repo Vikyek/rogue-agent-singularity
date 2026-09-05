@@ -1,0 +1,415 @@
+From 6c5be402c8789818e0b2d4717b060e4526ab8e5b Mon Sep 17 00:00:00 2001
+From: "google-labs-jules[bot]"
+ <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date: Sat, 5 Sep 2026 05:15:39 +0000
+Subject: [PATCH] =?UTF-8?q?=E2=9A=A1=20Bolt:=20Optimize=20identical=20keys?=
+ =?UTF-8?q?=20check=20in=20array=20compression?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/__init__.py           |  6 +-----
+ src/patterns.py           | 25 ++++++++++++------------
+ src/server.py             | 33 +++++++++++++------------------
+ src/toon_converter.py     | 41 +++++++++++++++++++++------------------
+ tests/test_conversions.py |  4 +++-
+ 5 files changed, 51 insertions(+), 58 deletions(-)
+
+diff --git a/src/__init__.py b/src/__init__.py
+index 0d21cf7..11c5018 100644
+--- a/src/__init__.py
++++ b/src/__init__.py
+@@ -3,13 +3,9 @@ TOON MCP Server Package
+ Token-Optimized Object Notation for efficient AI context management.
+ """
+
+-from .toon_converter import (
+-    TOONConverter,
+-    convert_json_to_toon,
+-    convert_toon_to_json
+-)
+ from .patterns import PatternDetector, SmartCompressionStrategy
+ from .server import TOONMCPServer
++from .toon_converter import TOONConverter, convert_json_to_toon, convert_toon_to_json
+
+ __version__ = "1.0.0"
+ __all__ = [
+diff --git a/src/patterns.py b/src/patterns.py
+index 2a3069d..b78eb60 100644
+--- a/src/patterns.py
++++ b/src/patterns.py
+@@ -3,10 +3,9 @@ Pattern Detection for TOON Converter
+ Identifies common patterns in JSON data for optimal compression.
+ """
+
+-import re
+-from typing import Any, Dict, List, Optional, Tuple
+ from collections import Counter
+ from dataclasses import dataclass
++from typing import Any
+
+
+ @dataclass
+@@ -14,8 +13,8 @@ class Pattern:
+     """Represents a detected pattern in JSON data."""
+     pattern_type: str
+     confidence: float
+-    keys: Optional[List[str]] = None
+-    sample: Optional[Any] = None
++    keys: list[str] | None = None
++    sample: Any | None = None
+     count: int = 0
+
+
+@@ -64,10 +63,10 @@ class PatternDetector:
+
+     def __init__(self):
+         """Initialize pattern detector."""
+-        self.detected_patterns: List[Pattern] = []
++        self.detected_patterns: list[Pattern] = []
+         self.key_frequency: Counter = Counter()
+
+-    def analyze(self, data: Any) -> List[Pattern]:
++    def analyze(self, data: Any) -> list[Pattern]:
+         """
+         Analyze data and detect patterns.
+
+@@ -197,7 +196,7 @@ class PatternDetector:
+             if isinstance(value, list) and len(value) > 0:
+                 self._analyze_single_array(value, key)
+
+-    def _analyze_single_array(self, array: List, key: str) -> None:
++    def _analyze_single_array(self, array: list, key: str) -> None:
+         """Analyze a single array for patterns."""
+         # Homogeneous arrays
+         if self._is_homogeneous_array(array):
+@@ -228,7 +227,7 @@ class PatternDetector:
+
+         structure_hashes: Counter = Counter()
+
+-        def hash_structure(obj: Any) -> Optional[str]:
++        def hash_structure(obj: Any) -> str | None:
+             """Create a hash of object structure."""
+             if isinstance(obj, dict):
+                 return '|'.join(sorted(obj.keys()))
+@@ -258,7 +257,7 @@ class PatternDetector:
+                     count=count
+                 ))
+
+-    def _is_homogeneous_array(self, arr: List) -> bool:
++    def _is_homogeneous_array(self, arr: list) -> bool:
+         """Check if array contains all same type."""
+         if not arr:
+             return True
+@@ -266,7 +265,7 @@ class PatternDetector:
+         first_type = type(arr[0])
+         return all(isinstance(item, first_type) for item in arr)
+
+-    def _calculate_schema_consistency(self, arr: List[Dict]) -> float:
++    def _calculate_schema_consistency(self, arr: list[dict]) -> float:
+         """Calculate how consistent the schemas are in an array of objects."""
+         if not arr:
+             return 0.0
+@@ -283,7 +282,7 @@ class PatternDetector:
+
+         return len(common_keys) / len(all_keys) if all_keys else 0.0
+
+-    def get_compression_recommendations(self) -> List[str]:
++    def get_compression_recommendations(self) -> list[str]:
+         """
+         Get recommendations for optimal compression based on detected patterns.
+
+@@ -323,7 +322,7 @@ class PatternDetector:
+
+         return recommendations
+
+-    def suggest_custom_abbreviations(self) -> Dict[str, str]:
++    def suggest_custom_abbreviations(self) -> dict[str, str]:
+         """
+         Suggest custom abbreviations for frequently used keys.
+
+@@ -359,7 +358,7 @@ class SmartCompressionStrategy:
+         """Initialize with a pattern detector."""
+         self.detector = detector
+
+-    def get_strategy(self, data: Any) -> Dict[str, Any]:
++    def get_strategy(self, data: Any) -> dict[str, Any]:
+         """
+         Determine optimal compression strategy for given data.
+
+diff --git a/src/server.py b/src/server.py
+index e370b90..a3258b1 100644
+--- a/src/server.py
++++ b/src/server.py
+@@ -6,21 +6,14 @@ Model Context Protocol server for TOON conversions.
+ import asyncio
+ import json
+ import logging
+-from typing import Any, Dict, List, Optional
++from typing import Any
+
+-from mcp.server import Server
+-from mcp.types import (
+-    Resource,
+-    Tool,
+-    TextContent,
+-    ImageContent,
+-    EmbeddedResource,
+-    LoggingLevel
+-)
+ import mcp.server.stdio
++from mcp.server import Server
++from mcp.types import Resource, TextContent, Tool
+
+-from .toon_converter import TOONConverter, convert_json_to_toon, convert_toon_to_json
+ from .patterns import PatternDetector, SmartCompressionStrategy
++from .toon_converter import TOONConverter, convert_json_to_toon, convert_toon_to_json
+
+ # Configure logging
+ logging.basicConfig(level=logging.INFO)
+@@ -48,7 +41,7 @@ class TOONMCPServer:
+         """Set up MCP protocol handlers."""
+
+         @self.server.list_resources()
+-        async def list_resources() -> List[Resource]:
++        async def list_resources() -> list[Resource]:
+             """List available resources."""
+             return [
+                 Resource(
+@@ -123,7 +116,7 @@ TOON Format:
+             raise ValueError(f"Unknown resource: {uri}")
+
+         @self.server.list_tools()
+-        async def list_tools() -> List[Tool]:
++        async def list_tools() -> list[Tool]:
+             """List available tools."""
+             return [
+                 Tool(
+@@ -223,7 +216,7 @@ TOON Format:
+             ]
+
+         @self.server.call_tool()
+-        async def call_tool(name: str, arguments: Any) -> List[TextContent]:
++        async def call_tool(name: str, arguments: Any) -> list[TextContent]:
+             """Handle tool calls."""
+             try:
+                 if name == "convert_to_toon":
+@@ -260,7 +253,7 @@ TOON Format:
+                     text=f"Error: Internal server error - {str(e)}"
+                 )]
+
+-    async def _convert_to_toon(self, arguments: Dict) -> List[TextContent]:
++    async def _convert_to_toon(self, arguments: dict) -> list[TextContent]:
+         """Convert JSON to TOON format."""
+         json_data = arguments["json_data"]
+         aggressive = arguments.get("aggressive", False)
+@@ -289,7 +282,7 @@ TOON Format:
+             text=json.dumps(result)
+         )]
+
+-    async def _convert_to_json(self, arguments: Dict) -> List[TextContent]:
++    async def _convert_to_json(self, arguments: dict) -> list[TextContent]:
+         """Convert TOON to JSON format."""
+         toon_data = arguments["toon_data"]
+
+@@ -301,7 +294,7 @@ TOON Format:
+             text=json_result
+         )]
+
+-    async def _analyze_patterns(self, arguments: Dict) -> List[TextContent]:
++    async def _analyze_patterns(self, arguments: dict) -> list[TextContent]:
+         """Analyze patterns in JSON data."""
+         json_data = arguments["json_data"]
+         data = json.loads(json_data)
+@@ -330,7 +323,7 @@ TOON Format:
+             text=json.dumps(result)
+         )]
+
+-    async def _get_compression_strategy(self, arguments: Dict) -> List[TextContent]:
++    async def _get_compression_strategy(self, arguments: dict) -> list[TextContent]:
+         """Get optimal compression strategy."""
+         json_data = arguments["json_data"]
+         data = json.loads(json_data)
+@@ -358,7 +351,7 @@ TOON Format:
+             text=json.dumps(result)
+         )]
+
+-    async def _calculate_savings(self, arguments: Dict) -> List[TextContent]:
++    async def _calculate_savings(self, arguments: dict) -> list[TextContent]:
+         """Calculate token savings."""
+         json_data = arguments["json_data"]
+
+@@ -374,7 +367,7 @@ TOON Format:
+             text=json.dumps(savings)
+         )]
+
+-    async def _batch_convert(self, arguments: Dict) -> List[TextContent]:
++    async def _batch_convert(self, arguments: dict) -> list[TextContent]:
+         """Batch convert multiple JSON objects."""
+         json_array = arguments["json_array"]
+         aggressive = arguments.get("aggressive", False)
+diff --git a/src/toon_converter.py b/src/toon_converter.py
+index 6fa0fd0..bed75f9 100644
+--- a/src/toon_converter.py
++++ b/src/toon_converter.py
+@@ -4,10 +4,10 @@ Converts verbose JSON structures to compact TOON format for reduced token consum
+ """
+
+ import json
+-from typing import Any, Dict, List, Optional, Union
+ from collections import Counter
++from typing import Any
+
+-from .config import KEY_ABBREV, CHARS_PER_TOKEN
++from .config import CHARS_PER_TOKEN, KEY_ABBREV
+
+
+ class TOONConverter:
+@@ -23,8 +23,8 @@ class TOONConverter:
+     6. In aggressive mode, domain-specific keys are auto-abbreviated and stored in _custom_keys
+     """
+
+-    KEY_ABBREV: Dict[str, str] = KEY_ABBREV
+-    ABBREV_KEY: Dict[str, str] = {v: k for k, v in KEY_ABBREV.items()}
++    KEY_ABBREV: dict[str, str] = KEY_ABBREV
++    ABBREV_KEY: dict[str, str] = {v: k for k, v in KEY_ABBREV.items()}
+
+     def __init__(self, aggressive: bool = False):
+         """
+@@ -35,12 +35,12 @@ class TOONConverter:
+                         Custom abbreviations are stored in _custom_keys for lossless round-trip.
+         """
+         self.aggressive = aggressive
+-        self.ref_cache: Dict[str, Any] = {}
++        self.ref_cache: dict[str, Any] = {}
+         self.ref_counter = 0
+         self.key_freq: Counter = Counter()
+-        self.custom_abbrev: Dict[str, str] = {}  # key -> short form, populated in aggressive mode
++        self.custom_abbrev: dict[str, str] = {}  # key -> short form, populated in aggressive mode
+
+-    def json_to_toon(self, data: Union[Dict, List, str]) -> str:
++    def json_to_toon(self, data: dict | list | str) -> str:
+         """
+         Convert JSON to TOON format.
+
+@@ -67,7 +67,7 @@ class TOONConverter:
+
+         toon_data = self._convert_to_toon(data)
+
+-        result: Dict[str, Any] = {
++        result: dict[str, Any] = {
+             '_toon': '1.0',
+             'd': toon_data,
+         }
+@@ -115,13 +115,13 @@ class TOONConverter:
+             for item in data:
+                 self._build_ref_cache(item)
+
+-    def _build_custom_abbrev(self) -> Dict[str, str]:
++    def _build_custom_abbrev(self) -> dict[str, str]:
+         """
+         Build custom abbreviations for frequent domain-specific keys.
+         Only targets keys that appear 2+ times, are absent from KEY_ABBREV,
+         and are longer than 3 characters.
+         """
+-        custom: Dict[str, str] = {}
++        custom: dict[str, str] = {}
+         existing_abbrevs = set(self.KEY_ABBREV.values())
+
+         for key, count in self.key_freq.most_common():
+@@ -168,7 +168,7 @@ class TOONConverter:
+         """Compress string values (extensible hook for future strategies)."""
+         return s
+
+-    def _compress_array(self, arr: List) -> Any:
++    def _compress_array(self, arr: list) -> Any:
+         """
+         Compress arrays. When all items share identical keys, use schema encoding:
+             {"_sch": [<keys>], "_dat": [[<values>], ...]}
+@@ -178,8 +178,11 @@ class TOONConverter:
+             return []
+
+         if all(isinstance(item, dict) for item in arr):
+-            key_sets = [set(item.keys()) for item in arr]
+-            if len({tuple(sorted(ks)) for ks in key_sets}) == 1:
++            # Performance optimization: checking all(item.keys() == first_keys) is
++            # O(N) and short-circuits, avoiding expensive set/tuple allocations and sorting
++            # compared to len({tuple(sorted(ks)) for ks in key_sets}) == 1
++            first_keys = arr[0].keys()
++            if all(item.keys() == first_keys for item in arr):
+                 # All objects have identical keys — encode as schema + value rows
+                 keys = sorted(arr[0].keys())
+                 compressed_keys = [self._abbrev_key(k) for k in keys]
+@@ -193,7 +196,7 @@ class TOONConverter:
+
+         return [self._convert_to_toon(item) for item in arr]
+
+-    def _compress_object(self, obj: Dict) -> Dict:
++    def _compress_object(self, obj: dict) -> dict:
+         """Compress object by abbreviating keys."""
+         return {self._abbrev_key(k): self._convert_to_toon(v) for k, v in obj.items()}
+
+@@ -205,7 +208,7 @@ class TOONConverter:
+             return self.custom_abbrev[key]
+         return key
+
+-    def _convert_from_toon(self, data: Any, refs: Dict, abbrev_key: Dict[str, str]) -> Any:
++    def _convert_from_toon(self, data: Any, refs: dict, abbrev_key: dict[str, str]) -> Any:
+         """Recursively convert TOON format back to standard JSON."""
+         if data == '~':
+             return None
+@@ -227,7 +230,7 @@ class TOONConverter:
+             return self._decompress_object(data, refs, abbrev_key)
+         return data
+
+-    def _decompress_schema_array(self, data: Dict, refs: Dict, abbrev_key: Dict[str, str]) -> List:
++    def _decompress_schema_array(self, data: dict, refs: dict, abbrev_key: dict[str, str]) -> list:
+         """Decompress schema-encoded array back to list of objects."""
+         expanded_keys = [abbrev_key.get(k, k) for k in data['_sch']]
+         return [
+@@ -235,14 +238,14 @@ class TOONConverter:
+             for row in data['_dat']
+         ]
+
+-    def _decompress_object(self, obj: Dict, refs: Dict, abbrev_key: Dict[str, str]) -> Dict:
++    def _decompress_object(self, obj: dict, refs: dict, abbrev_key: dict[str, str]) -> dict:
+         """Decompress object by expanding abbreviated keys."""
+         return {
+             abbrev_key.get(k, k): self._convert_from_toon(v, refs, abbrev_key)
+             for k, v in obj.items()
+         }
+
+-    def calculate_savings(self, original_json: str, toon_str: str) -> Dict[str, Any]:
++    def calculate_savings(self, original_json: str, toon_str: str) -> dict[str, Any]:
+         """
+         Calculate token savings from TOON conversion.
+
+@@ -274,7 +277,7 @@ class TOONConverter:
+         }
+
+
+-def convert_json_to_toon(json_data: Union[Dict, List, str], aggressive: bool = False) -> str:
++def convert_json_to_toon(json_data: dict | list | str, aggressive: bool = False) -> str:
+     """
+     Convenience function to convert JSON to TOON.
+
+diff --git a/tests/test_conversions.py b/tests/test_conversions.py
+index 20f499a..201f3eb 100644
+--- a/tests/test_conversions.py
++++ b/tests/test_conversions.py
+@@ -3,9 +3,11 @@ Tests for TOON conversions
+ """
+
+ import json
++
+ import pytest
+-from src.toon_converter import TOONConverter, convert_json_to_toon, convert_toon_to_json
++
+ from src.patterns import PatternDetector, SmartCompressionStrategy
++from src.toon_converter import TOONConverter, convert_json_to_toon, convert_toon_to_json
+
+
+ class TestTOONConverter:
+--
+2.53.0
