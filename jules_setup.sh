@@ -45,7 +45,7 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
             echo "Applying $patch_name..."
 
             # Apply jules_listener_injection.patch to agv-dispatcher/modules/jules-vanager submodule
-            if [[ "$patch_name" == "jules_listener_injection.patch" ]]; then
+            if [[ "$patch_name" == "jules_listener_injection.patch" || "$patch_name" == jules-tui-*.patch ]]; then
                 (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --forward < "$patch_file" || echo "Patch $patch_name might already be applied.")
             fi
 
