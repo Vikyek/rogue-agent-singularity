@@ -1,0 +1,29 @@
+--- a/agv-dispatcher/modules/jules-vanager/jules_tui.py
++++ b/agv-dispatcher/modules/jules-vanager/jules_tui.py
+@@ -102,9 +102,9 @@
+
+         if key in (ord('q'), ord('Q')):
+             break
+-        elif key == curses.KEY_UP and selected_idx > 0:
++        elif key in (curses.KEY_UP, ord('k'), ord('K')) and selected_idx > 0:
+             selected_idx -= 1
+-        elif key == curses.KEY_DOWN and selected_idx < len(sessions_cache) - 1:
++        elif key in (curses.KEY_DOWN, ord('j'), ord('J')) and selected_idx < len(sessions_cache) - 1:
+             selected_idx += 1
+         elif key in (ord('r'), ord('R')):
+             last_fetch = 0
+@@ -132,11 +132,13 @@
+     height, width = stdscr.getmaxyx()
+     curses.echo()
+     curses.curs_set(1)
++    prompt_str = f"Enter response for [{session_id[:12]}]: "
+     stdscr.addstr(height - 3, 2, " " * (width - 4))
+-    stdscr.addstr(height - 3, 2, f"Enter response for [{session_id[:12]}]: ", curses.color_pair(3) | curses.A_BOLD)
++    stdscr.addstr(height - 3, 2, prompt_str, curses.color_pair(3) | curses.A_BOLD)
+     stdscr.refresh()
+
+-    msg_bytes = stdscr.getstr(height - 3, 36, width - 40)
++    input_x = 2 + len(prompt_str)
++    msg_bytes = stdscr.getstr(height - 3, input_x, width - (input_x + 4))
+     curses.noecho()
+     curses.curs_set(0)
