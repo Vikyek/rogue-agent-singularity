@@ -1,0 +1,3 @@
+## 2026-09-04 - [Optimize Array Comprehension for TOON Object Schemas]
+**Learning:** [The `toon_converter.py` implementation redundantly allocated sets and tuples for every item in large arrays when checking for consistent schemas, causing an O(N) memory overhead and significant slowdown. Fast failing and using Python 3 `dict_keys` view (`item.keys() == first_keys`) eliminates this anti-pattern.]
+**Action:** [When validating uniformity of dictionary schemas in large arrays, use the `dict_keys` equality view (`==`) of the first element rather than doing expensive conversions to `set` and `tuple` for every item.]
