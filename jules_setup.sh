@@ -36,6 +36,21 @@ export JULES_SESSION_ID="${JULES_SESSION_ID:-17849353354405986700}"
 echo "Initializing submodules..."
 git submodule update --init --recursive || { echo "Failed to initialize submodules"; return 1 2>/dev/null || exit 1; }
 
+# Apply patches to submodules
+if [ -d "patches" ]; then
+    echo "Applying patches..."
+    for patch in patches/*.patch; do
+        if [ -f "$patch" ]; then
+            echo "Applying $patch..."
+            if [[ "$patch" == *"jules_listener"* ]]; then
+                 (cd agv-dispatcher/modules/jules-vanager && patch -p1 --forward < "../../../$patch" || true)
+            else
+                patch -p1 --forward < "$patch" || true
+            fi
+        fi
+    done
+fi
+
 VENV_DIR="${HOME}/.local/share/toon-venv"
 if [ ! -d "$VENV_DIR" ]; then
     echo "Creating isolated virtual environment for toon-mcp at $VENV_DIR..."
