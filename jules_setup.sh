@@ -46,7 +46,13 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
 
             # Apply toon_mcp_perf.patch to toon-mcp submodule
             if [[ "$patch_name" == "toon_mcp_perf.patch" ]]; then
-                (cd "$SCRIPT_DIR/toon-mcp" && git apply "$patch_file" 2>/dev/null || echo "Patch $patch_name might already be applied.")
+                (cd "$SCRIPT_DIR/toon-mcp" && {
+                    if git apply --check --reverse "$patch_file" >/dev/null 2>&1; then
+                        echo "Patch $patch_name might already be applied."
+                    else
+                        git apply "$patch_file" || { echo "Failed to apply $patch_name"; return 1 2>/dev/null || exit 1; }
+                    fi
+                })
             fi
         fi
     done
