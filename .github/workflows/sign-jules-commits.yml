@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout PR Branch
-        uses: actions/checkout@v5
+        uses: Vikyek/checkout@v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -28,7 +28,7 @@ jobs:
       - name: Import GPG Key
         if: ${{ env.GPG_KEY != '' }}
         id: import-gpg
-        uses: crazy-max/ghaction-import-gpg@v6
+        uses: Vikyek/ghaction-import-gpg@v6
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           git_user_signingkey: true
