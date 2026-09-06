@@ -17,7 +17,7 @@ jobs:
           pacman -Syu --noconfirm git sudo namcap diffutils pacman-contrib
 
       - name: Check out repository
-        uses: Vikyek/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Setup non-root builder
         run: |
@@ -66,7 +66,7 @@ jobs:
           namcap *.pkg.tar.zst
 
       - name: Upload Package Artifact
-        uses: Vikyek/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: built-package
           path: "*.pkg.tar.zst"
@@ -80,25 +80,25 @@ jobs:
       contents: write
     steps:
       - name: Check out repository
-        uses: Vikyek/checkout@v4
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Download Build Artifacts
-        uses: Vikyek/download-artifact@v4
+        uses: actions/download-artifact@v4
         with:
           name: built-package
           path: ./dist
 
       - name: Create GitHub Release
-        uses: Vikyek/action-gh-release@v2
+        uses: softprops/action-gh-release@v2
         with:
           files: ./dist/*.pkg.tar.zst
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to AUR
-        uses: Vikyek/github-actions-deploy-aur@v3
+        uses: KSXGitHub/github-actions-deploy-aur@v3
         with:
           pkgname: rouge-agent-singularity
           pkgbuild: ./PKGBUILD
