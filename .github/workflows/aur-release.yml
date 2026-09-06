@@ -19,6 +19,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
+      - name: Workaround makepkg missing alias source
+        run: cp man1/vras-submodule.1 . || true
+
       - name: Setup non-root builder
         run: |
           useradd -m -s /bin/bash builder
