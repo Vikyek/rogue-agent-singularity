@@ -44,12 +44,12 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
             patch_name=$(basename "$patch_file")
             echo "Applying $patch_name..."
 
-            # Apply toon_mcp_perf.patch to toon-mcp submodule
             # Apply jules_listener_injection.patch to agv-dispatcher/modules/jules-vanager submodule
             if [[ "$patch_name" == "jules_listener_injection.patch" ]]; then
                 (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --forward < "$patch_file" || echo "Patch $patch_name might already be applied.")
             fi
 
+            # Apply toon_mcp_perf.patch to toon-mcp submodule
             if [[ "$patch_name" == "toon_mcp_perf.patch" ]]; then
                 (cd "$SCRIPT_DIR/toon-mcp" && {
                     if git apply --check --reverse "$patch_file" >/dev/null 2>&1; then
