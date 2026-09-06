@@ -25,8 +25,9 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
-      with:
-        submodules: recursive
+
+    - name: Checkout public submodule
+      run: git submodule update --init toon-mcp
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
