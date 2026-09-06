@@ -19,7 +19,8 @@ elif [ -d "/usr/share/rogue-agent-singularity" ]; then
 elif [ -d "/usr/local/share/rogue-agent-singularity" ]; then
     VRAS_ROOT="/usr/local/share/rogue-agent-singularity"
 else
-    VRAS_ROOT="$PWD"
+    echo "ERROR: Could not locate VRAS root directory." >&2
+    exit 1
 fi
 
 cd "$VRAS_ROOT"
