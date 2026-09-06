@@ -1,3 +1,6 @@
+## 2025-10-24 - Batch git submodule status checks in bash loops
+**Learning:** `vras-submodule` loops over submodules, calling `git submodule status $mod` multiple times inside the loop. `git submodule status` without arguments outputs the status for all submodules. Calling it once and parsing the output is much faster than spawning multiple `git` processes inside a loop.
+**Action:** Use a single `git submodule status` call and parse the output rather than executing git commands inside a loop.
 ## 2025-01-20 - Submodule git commit strategy
 **Learning:** When modifying files inside Git submodules, I need to commit them inside the submodule directory first, then add the submodule folder to the root repository to update the pointer.
 **Action:** Follow the specific git commit order when dealing with submodules.
