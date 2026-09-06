@@ -26,6 +26,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Checkout public submodule
+      run: git submodule update --init toon-mcp
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
