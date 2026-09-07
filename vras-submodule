@@ -40,6 +40,17 @@ declare -A MODULES=(
 # Canonical module list
 ALL_MODULES=("agv-dispatcher" "jules-vanager" "agv-syncengine" "toon-mcp")
 
+# ANSI color definitions (respects NO_COLOR)
+if [ -z "${NO_COLOR:-}" ]; then
+    C_GREEN="\e[32m"
+    C_RED="\e[31m"
+    C_RESET="\e[0m"
+else
+    C_GREEN=""
+    C_RED=""
+    C_RESET=""
+fi
+
 # Status check helper
 is_enabled() {
     local mod="$1"
@@ -74,9 +85,9 @@ cmd_list() {
             # Extract commit hash from the line, preserving any + or U prefixes as in original script
             local commit_hash
             commit_hash=$(echo "$mod_line" | awk '{print $1}')
-            printf "  \e[32m● ENABLED \e[0m %-20s (%s)\n" "$mod" "$commit_hash"
+            printf "  ${C_GREEN}● ENABLED ${C_RESET} %-20s (%s)\n" "$mod" "$commit_hash"
         else
-            printf "  \e[31m○ DISABLED\e[0m %-20s (uninitialized)\n" "$mod"
+            printf "  ${C_RED}○ DISABLED${C_RESET} %-20s (uninitialized)\n" "$mod"
         fi
     done
     echo ""
