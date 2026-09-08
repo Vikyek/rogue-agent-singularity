@@ -12,3 +12,8 @@
 **Vulnerability:** The `jules_manager.py` API wrapper dynamically appended `session_id` to its API URL endpoints without sanitizing the input. This allowed Path Traversal (`../../`) to be injected into the URL via the CLI argument, potentially causing SSRF against Google's API endpoints.
 **Learning:** URL paths constructed dynamically from user input need sanitization.
 **Prevention:** Always use `urllib.parse.quote(id, safe="")` before injecting identifiers into URL paths.
+
+## 2025-03-09 - Prevent command injection in more Git commands
+**Vulnerability:** A command injection vulnerability existed where `subprocess.run(["git", "rebase", "origin/main", branch])` (and `merge`, `push`) allowed option injection if a branch name started with a dash.
+**Learning:** `git` and other CLI tools can interpret arguments that start with `-` as options rather than positional arguments. A previous patch only mitigated this for `git branch -d` and `git push --delete`.
+**Prevention:** Always use `--` in subprocess calls to explicitly denote the end of options and the beginning of positional arguments for all git commands taking arbitrary branch names (e.g. `subprocess.run(["git", "rebase", "origin/main", "--", branch])`).
