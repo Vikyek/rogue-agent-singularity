@@ -1,6 +1,35 @@
+diff --git a/src/patterns.py b/src/patterns.py
+index 2a3069d..1b65f1d 100644
+--- a/src/patterns.py
++++ b/src/patterns.py
+@@ -271,12 +271,18 @@ class PatternDetector:
+         if not arr:
+             return 0.0
+
+-        # Get all unique key sets
+-        key_sets = [set(item.keys()) for item in arr if isinstance(item, dict)]
+-
+-        if not key_sets:
++        valid_items = [item for item in arr if isinstance(item, dict)]
++        if not valid_items:
+             return 0.0
+
++        # Fast path for perfectly homogeneous arrays
++        first_keys = valid_items[0].keys()
++        if all(item.keys() == first_keys for item in valid_items):
++            return 1.0
++
++        # Get all unique key sets
++        key_sets = [set(item.keys()) for item in valid_items]
++
+         # Calculate consistency based on key overlap
+         all_keys = set.union(*key_sets)
+         common_keys = set.intersection(*key_sets)
+diff --git a/src/toon_converter.py b/src/toon_converter.py
+index 6fa0fd0..a93915a 100644
 --- a/src/toon_converter.py
 +++ b/src/toon_converter.py
-@@ -177,11 +177,14 @@
+@@ -177,11 +177,14 @@ class TOONConverter:
          if not arr:
              return []
 
