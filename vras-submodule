@@ -40,7 +40,13 @@ declare -A MODULES=(
 # Canonical module list
 ALL_MODULES=("agv-dispatcher" "jules-vanager" "agv-syncengine" "toon-mcp")
 
-# Status check helper
+# /**
+#  * Checks if a specific submodule is currently enabled/initialized.
+#  *
+#  * @param mod - The name of the submodule to check.
+#  * @param status - Optional pre-fetched status string from git submodule status.
+#  * @returns 0 if the module is enabled/initialized, 1 if uninitialized/disabled.
+#  */
 is_enabled() {
     local mod="$1"
     local status="${2:-}"
