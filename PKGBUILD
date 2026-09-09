@@ -6,7 +6,7 @@ pkgdesc="Vikyek's Rogue Agent Singularity — Suite of autonomous multi-agent to
 arch=('any')
 url="https://github.com/Vikyek/rogue-agent-singularity"
 license=('MIT')
-depends=('python' 'git' 'bash')
+depends=('python' 'bash')
 makedepends=('git' 'make')
 optdepends=(
     'agv-dispatcher: Token-efficient task dispatcher & self-scaling orchestrator'
