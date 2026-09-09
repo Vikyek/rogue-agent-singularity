@@ -41,11 +41,12 @@ declare -A MODULES=(
 ALL_MODULES=("agv-dispatcher" "jules-vanager" "agv-syncengine" "toon-mcp")
 
 # /**
-#  * Checks if a specific submodule is currently enabled/initialized.
+#  * Checks if a given submodule is enabled (initialized).
+#  * Respects NO_COLOR for accessible terminal output.
 #  *
-#  * @param mod - The name of the submodule to check.
-#  * @param status - Optional pre-fetched status string from git submodule status.
-#  * @returns 0 if the module is enabled/initialized, 1 if uninitialized/disabled.
+#  * @param $1 - The module name to check.
+#  * @param $2 - Optional pre-fetched git status line to avoid a redundant git call.
+#  * @returns 0 (true) if enabled, 1 (false) if disabled or uninitialized.
 #  */
 is_enabled() {
     local mod="$1"
@@ -63,8 +64,10 @@ is_enabled() {
 }
 
 # /**
-#  * Lists all VRAS submodules and their current initialization status.
+#  * Lists all submodules and their current status (ENABLED or DISABLED).
 #  * Respects NO_COLOR for accessible terminal output.
+#  *
+#  * @returns 0 on success.
 #  */
 cmd_list() {
     echo "🌌 Vikyek's Rogue Agent Singularity — Submodules:"
@@ -102,8 +105,10 @@ cmd_list() {
 }
 
 # /**
-#  * Enables (initializes and updates) one or all submodules.
-#  * @param {string} target - The submodule alias or "all".
+#  * Enables and initializes the specified submodule(s).
+#  *
+#  * @param $1 - The module name to enable, or "all" to enable all submodules (default: "all").
+#  * @returns 0 on success.
 #  */
 cmd_enable() {
     local target="${1:-all}"
@@ -121,8 +126,10 @@ cmd_enable() {
 }
 
 # /**
-#  * Disables (deinitializes) one or all submodules.
-#  * @param {string} target - The submodule alias or "all".
+#  * Disables and deinitializes the specified submodule(s).
+#  *
+#  * @param $1 - The module name to disable, or "all" to disable all submodules (default: "all").
+#  * @returns 0 on success.
 #  */
 cmd_disable() {
     local target="${1:-all}"
@@ -140,8 +147,11 @@ cmd_disable() {
 }
 
 # /**
-#  * Toggles the state (enable/disable) of a specific submodule.
-#  * @param {string} target - The submodule alias.
+#  * Toggles the state of the specified submodule (enables if disabled, disables if enabled).
+#  *
+#  * @param $1 - The module name to toggle.
+#  * @returns 0 on success.
+#  * @throws Exits with code 1 if no module is provided.
 #  */
 cmd_toggle() {
     local target="${1:-}"
