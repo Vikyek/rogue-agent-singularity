@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Setup colors and output helpers
-if [[ -v NO_COLOR ]]; then
+if [[ -z "${NO_COLOR:-}" ]]; then
     C_INFO='\033[1;34m'
     C_WARN='\033[1;33m'
     C_ERR='\033[1;31m'
