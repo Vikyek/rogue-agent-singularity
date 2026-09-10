@@ -1,0 +1,60 @@
+diff --git a/jules_tui.py b/jules_tui.py
+index cc0f53c..044d22c 100755
+--- a/jules_tui.py
++++ b/jules_tui.py
+@@ -40,7 +40,7 @@ def draw_menu(stdscr):
+     selected_idx = 0
+     sessions_cache = []
+     last_fetch = 0
+-    status_msg = "Press 'r' to refresh, 'a' to archive, 'm' to cycle mode, 'q' to quit."
++    status_msg = "Ready."
+     cfg = load_config()
+
+     while True:
+@@ -91,20 +91,26 @@ def draw_menu(stdscr):
+                     stdscr.addstr(5 + i, 2, line[:width-4])
+                     stdscr.attroff(color)
+
+-        # Footer / Command bar
++        # Ephemeral Status Message
+         stdscr.attron(curses.color_pair(1))
+-        stdscr.addstr(height - 2, 2, status_msg[:width-4])
++        stdscr.addstr(height - 3, 2, status_msg[:width-4])
+         stdscr.attroff(curses.color_pair(1))
+
++        # Persistent Shortcuts Bar
++        persistent_shortcuts = "Shortcuts: [r]efresh | [a]rchive | [m]ode | [Enter] reply | [q]uit"
++        stdscr.attron(curses.color_pair(3) | curses.A_BOLD)
++        stdscr.addstr(height - 2, 2, persistent_shortcuts[:width-4])
++        stdscr.attroff(curses.color_pair(3) | curses.A_BOLD)
++
+         stdscr.refresh()
+         stdscr.timeout(1000)
+         key = stdscr.getch()
+
+         if key in (ord('q'), ord('Q')):
+             break
+-        elif key == curses.KEY_UP and selected_idx > 0:
++        elif (key == curses.KEY_UP or key == ord('k')) and selected_idx > 0:
+             selected_idx -= 1
+-        elif key == curses.KEY_DOWN and selected_idx < len(sessions_cache) - 1:
++        elif (key == curses.KEY_DOWN or key == ord('j')) and selected_idx < len(sessions_cache) - 1:
+             selected_idx += 1
+         elif key in (ord('r'), ord('R')):
+             last_fetch = 0
+@@ -132,11 +138,14 @@ def prompt_reply(stdscr, session_id):
+     height, width = stdscr.getmaxyx()
+     curses.echo()
+     curses.curs_set(1)
++    prompt_text = f"Enter response for [{session_id[:12]}]: "
+     stdscr.addstr(height - 3, 2, " " * (width - 4))
+-    stdscr.addstr(height - 3, 2, f"Enter response for [{session_id[:12]}]: ", curses.color_pair(3) | curses.A_BOLD)
++    stdscr.addstr(height - 3, 2, prompt_text, curses.color_pair(3) | curses.A_BOLD)
+     stdscr.refresh()
+
+-    msg_bytes = stdscr.getstr(height - 3, 36, width - 40)
++    # Calculate input coordinate dynamically based on text length
++    input_x = 2 + len(prompt_text)
++    msg_bytes = stdscr.getstr(height - 3, input_x, width - input_x - 2)
+     curses.noecho()
+     curses.curs_set(0)
