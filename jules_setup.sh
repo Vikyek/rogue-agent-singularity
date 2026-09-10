@@ -15,9 +15,32 @@ else
     C_RST=''
 fi
 
+# /**
+#  * Outputs an informational message with semantic formatting (if colors enabled).
+#  *
+#  * @param $1 - The message string to log
+#  */
 info() { echo -e "${C_INFO}[INFO]${C_RST} $1"; }
+
+# /**
+#  * Outputs a warning message to standard error with semantic formatting.
+#  *
+#  * @param $1 - The warning message string to log
+#  */
 warn() { echo -e "${C_WARN}[WARN]${C_RST} $1" >&2; }
+
+# /**
+#  * Outputs an error message to standard error with semantic formatting.
+#  *
+#  * @param $1 - The error message string to log
+#  */
 error() { echo -e "${C_ERR}[ERROR]${C_RST} $1" >&2; }
+
+# /**
+#  * Outputs a success message with semantic formatting.
+#  *
+#  * @param $1 - The success message string to log
+#  */
 success() { echo -e "${C_OK}[SUCCESS]${C_RST} $1"; }
 
 # Determine repository directory and change to it
