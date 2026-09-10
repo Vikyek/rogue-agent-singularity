@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Setup colors and output helpers
-if [[ -v NO_COLOR ]]; then
+if [[ -z "${NO_COLOR:-}" ]]; then
     C_INFO='\033[1;34m'
     C_WARN='\033[1;33m'
     C_ERR='\033[1;31m'
@@ -15,10 +15,10 @@ else
     C_RST=''
 fi
 
-info() { echo -e "${C_INFO}[INFO]${C_RST} $1"; }
-warn() { echo -e "${C_WARN}[WARN]${C_RST} $1" >&2; }
-error() { echo -e "${C_ERR}[ERROR]${C_RST} $1" >&2; }
-success() { echo -e "${C_OK}[SUCCESS]${C_RST} $1"; }
+info() { echo -e "${C_INFO}ℹ INFO${C_RST}  $1"; }
+warn() { echo -e "${C_WARN}⚠ WARN${C_RST}  $1" >&2; }
+error() { echo -e "${C_ERR}✖ ERROR${C_RST} $1" >&2; }
+success() { echo -e "${C_OK}✔ OK${C_RST}    $1"; }
 
 # Determine repository directory and change to it
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
