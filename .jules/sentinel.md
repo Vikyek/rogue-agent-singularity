@@ -17,3 +17,8 @@
 **Vulnerability:** A command injection vulnerability existed where `subprocess.run(["git", "rebase", "origin/main", branch])` (and `merge`, `push`) allowed option injection if a branch name started with a dash.
 **Learning:** `git` and other CLI tools can interpret arguments that start with `-` as options rather than positional arguments. A previous patch only mitigated this for `git branch -d` and `git push --delete`.
 **Prevention:** Always use `--` in subprocess calls to explicitly denote the end of options and the beginning of positional arguments for all git commands taking arbitrary branch names (e.g. `subprocess.run(["git", "rebase", "origin/main", "--", branch])`).
+
+## 2026-09-12 - Prevent command injection in jules_listener git push and branch
+**Vulnerability:** A command injection vulnerability existed where `subprocess.run(["git", "branch", "-d", branch])` and `git push --delete` allowed option injection if a branch name started with a dash.
+**Learning:** `git` and other CLI tools can interpret arguments that start with `-` as options rather than positional arguments.
+**Prevention:** Always use `--` in subprocess calls to explicitly denote the end of options and the beginning of positional arguments (e.g. `subprocess.run(["git", "branch", "-d", "--", branch])`).
