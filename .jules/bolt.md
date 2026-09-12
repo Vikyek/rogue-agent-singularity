@@ -20,3 +20,7 @@
 ## $(date +%Y-%m-%d) - Optimize schema consistency pattern detection
 **Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries, which are common in JSON APIs.
 **Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C (order-agnostic in Python 3), but still allocates the `valid_items` list for each array, so it does not provide O(1) space. It remains a fast O(N) time optimization before falling back to expensive `set` operations.
+
+## 2026-09-12 - Optimize JSON traversal loops
+**Learning:** Recursively traversing deep or large JSON dictionaries and arrays to collect key frequencies is slow due to Python function call overhead and manual element iteration.
+**Action:** For simple aggregation tasks like `Counter` frequencies, always prefer an iterative stack-based traversal and use bulk native operations like `Counter.update(dict.keys())` to process dictionary keys in C, yielding significant performance gains.
