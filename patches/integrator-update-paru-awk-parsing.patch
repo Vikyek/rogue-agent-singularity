@@ -1,0 +1,32 @@
+From e2faf8253fa5883eea9feeb6f998f48119525392 Mon Sep 17 00:00:00 2001
+From: "google-labs-jules[bot]"
+ <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date: Sat, 12 Sep 2026 18:23:00 +0000
+Subject: [PATCH] Fix parsing drift for pacman/paru output
+
+---
+ paru-wrapper | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/paru-wrapper b/paru-wrapper
+index b4a73cf..297d7db 100755
+--- a/paru-wrapper
++++ b/paru-wrapper
+@@ -509,13 +509,13 @@ if [ "$is_transaction" = true ]; then
+         new_deps=""
+         if [[ -n "$upgrades" ]]; then
+             # Query pacman sync database for repository packages dependencies
+-            repo_deps=$(echo "$upgrades" | xargs -r pacman -Si 2>/dev/null | awk '/^(Depends On|Depends)[[:space:]]*:/ { in_depends = 1; sub(/^[^:]*:[[:space:]]*/, ""); print; next } /^[a-zA-Z]/ { in_depends = 0 } in_depends { sub(/^[[:space:]]+/, ""); print }' | tr ' ' '\n' | sed '/^$/d; s/[<>=].*//' | sort -u || true)
++            repo_deps=$(echo "$upgrades" | xargs -r pacman -Si 2>/dev/null | awk '/^(Depends On|Depends)[[:space:]]*:/ { in_depends = 1; sub(/^[^:]*:[[:space:]]*/, ""); print; next } /^[A-Z][a-zA-Z ]*[[:space:]]*:/ { in_depends = 0 } in_depends { sub(/^[[:space:]]+/, ""); print }' | tr ' ' '\n' | sed '/^$/d; s/[<>=].*//' | sort -u || true)
+
+             # Query AUR RPC (or paru info) for AUR package dependencies
+             aur_deps=""
+             aur_upgrades=$(echo "$upgrades" | grep -vFf <(pacman -Slq 2>/dev/null) || true)
+             if [[ -n "$aur_upgrades" ]]; then
+-                aur_deps=$(echo "$aur_upgrades" | xargs -r /usr/bin/paru -Si 2>/dev/null | awk '/^(Depends On|Depends)[[:space:]]*:/ { in_depends = 1; sub(/^[^:]*:[[:space:]]*/, ""); print; next } /^[a-zA-Z]/ { in_depends = 0 } in_depends { sub(/^[[:space:]]+/, ""); print }' | tr ' ' '\n' | sed '/^$/d; s/[<>=].*//' | sort -u || true)
++                aur_deps=$(echo "$aur_upgrades" | xargs -r /usr/bin/paru -Si 2>/dev/null | awk '/^(Depends On|Depends)[[:space:]]*:/ { in_depends = 1; sub(/^[^:]*:[[:space:]]*/, ""); print; next } /^[A-Z][a-zA-Z ]*[[:space:]]*:/ { in_depends = 0 } in_depends { sub(/^[[:space:]]+/, ""); print }' | tr ' ' '\n' | sed '/^$/d; s/[<>=].*//' | sort -u || true)
+             fi
+
+             new_deps=$(echo -e "${repo_deps}\n${aur_deps}" | sort -u)
+--
+2.53.0
