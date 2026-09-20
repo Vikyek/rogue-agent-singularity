@@ -15,9 +15,36 @@ else
     C_RST=''
 fi
 
+# /**
+#  * Prints an informational message to standard output.
+#  *
+#  * @param $1 - The message string to print.
+#  * @returns None
+#  */
 info() { echo -e "${C_INFO}[INFO]${C_RST} $1"; }
+
+# /**
+#  * Prints a warning message to standard error.
+#  *
+#  * @param $1 - The warning message string to print.
+#  * @returns None
+#  */
 warn() { echo -e "${C_WARN}[WARN]${C_RST} $1" >&2; }
+
+# /**
+#  * Prints an error message to standard error.
+#  *
+#  * @param $1 - The error message string to print.
+#  * @returns None
+#  */
 error() { echo -e "${C_ERR}[ERROR]${C_RST} $1" >&2; }
+
+# /**
+#  * Prints a success message to standard output.
+#  *
+#  * @param $1 - The success message string to print.
+#  * @returns None
+#  */
 success() { echo -e "${C_OK}[SUCCESS]${C_RST} $1"; }
 
 # Determine repository directory and change to it
