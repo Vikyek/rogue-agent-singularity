@@ -5,9 +5,9 @@ pkgrel=1
 pkgdesc="Vikyek's Rogue Agent Singularity — Suite of autonomous multi-agent tools, orchestrators, and plugins for Antigravity (AGY)"
 arch=('any')
 url="https://github.com/Vikyek/rogue-agent-singularity"
-license=('MIT')
+license=('LicenseRef-MIT')
 depends=('python' 'bash')
-makedepends=('git' 'make')
+makedepends=('git')
 optdepends=(
     'agv-dispatcher: Token-efficient task dispatcher & self-scaling orchestrator'
     'jules-vanager: Google Jules API Manager, Listener Daemon, TUI, and Conky HUD'
@@ -15,10 +15,10 @@ optdepends=(
     'toon-mcp: TOON-format token optimization MCP server'
 )
 source=("git+https://github.com/Vikyek/rogue-agent-singularity.git#tag=v$pkgver"
-        "agv-dispatcher::git+https://github.com/Vikyek/agv-dispatcher.git"
-        "jules-vanager::git+https://github.com/Vikyek/jules-vanager.git"
-        "agv-syncengine::git+https://github.com/Vikyek/agv-syncengine.git"
-        "toon-mcp::git+https://github.com/Vikyek/toon-mcp.git")
+        "agv-dispatcher::git+https://github.com/Vikyek/agv-dispatcher.git#branch=main"
+        "jules-vanager::git+https://github.com/Vikyek/jules-vanager.git#branch=main"
+        "agv-syncengine::git+https://github.com/Vikyek/agv-syncengine.git#branch=master"
+        "toon-mcp::git+https://github.com/Vikyek/toon-mcp.git#branch=main")
 sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 prepare() {
