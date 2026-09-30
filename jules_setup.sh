@@ -98,6 +98,10 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
                 fi
             fi
 
+            if [[ "$patch_name" == "paru-wrapper-awk.patch" ]]; then
+                (cd "$SCRIPT_DIR/paru-wrapper" && patch -p1 --forward < "$patch_file" || info "Patch $patch_name might already be applied.")
+            fi
+
             # Apply toon_mcp_perf.patch to toon-mcp submodule
             if [[ "$patch_name" == "toon_mcp_perf.patch" || "$patch_name" == "toon_mcp_perf_iteration.patch" ]]; then
                 (cd "$SCRIPT_DIR/toon-mcp" && {
