@@ -1,0 +1,14 @@
+diff --git a/jules_listener.py b/jules_listener.py
+index 9ac8caf..32b4f56 100755
+--- a/jules_listener.py
++++ b/jules_listener.py
+@@ -200,8 +200,8 @@ def run_pass():
+             status = "MERGED" if h["merged"] else "NEEDS REVIEW / CONFLICTS"
+             print(f"  -> [{h['repo']}] PR #{h['pr_number']} ({h['branch']}): {status}")
+             if h["merged"]:
+-                subprocess.run(["git", "branch", "-d", h["branch"]], cwd=os.path.join(PROJECTS_DIR, h["repo"]), capture_output=True)
+-                subprocess.run(["git", "push", "origin", "--delete", h["branch"]], cwd=os.path.join(PROJECTS_DIR, h["repo"]), capture_output=True)
++                subprocess.run(["git", "branch", "-d", "--", h["branch"]], cwd=os.path.join(PROJECTS_DIR, h["repo"]), capture_output=True)
++                subprocess.run(["git", "push", "origin", "--delete", "--", h["branch"]], cwd=os.path.join(PROJECTS_DIR, h["repo"]), capture_output=True)
+     else:
+         print("✅ [Jules Listener] No open Jules PRs requiring action.")

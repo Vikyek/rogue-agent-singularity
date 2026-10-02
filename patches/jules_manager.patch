@@ -1,5 +1,5 @@
---- a/jules_manager.py
-+++ b/jules_manager.py
+--- agv-dispatcher/modules/jules-vanager/jules_manager.py
++++ agv-dispatcher/modules/jules-vanager/jules_manager.py
 @@ -94,16 +94,19 @@
 
  def get_session_activities(session_id):
