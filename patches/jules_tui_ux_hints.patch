@@ -1,0 +1,23 @@
+--- a/jules_tui.py
++++ b/jules_tui.py
+@@ -40,7 +40,7 @@
+     selected_idx = 0
+     sessions_cache = []
+     last_fetch = 0
+-    status_msg = "Press 'r' to refresh, 'a' to archive, 'm' to cycle mode, 'q' to quit."
++    status_msg = "Press 'ENTER' to reply, 'r' to refresh, 'a' to archive, 'm' to cycle mode, 'q' to quit."
+     cfg = load_config()
+
+     while True:
+@@ -133,9 +133,9 @@
+     curses.echo()
+     curses.curs_set(1)
+     stdscr.addstr(height - 3, 2, " " * (width - 4))
+-    stdscr.addstr(height - 3, 2, f"Enter response for [{session_id[:12]}]: ", curses.color_pair(3) | curses.A_BOLD)
++    stdscr.addstr(height - 3, 2, f"Enter response for [{session_id[:12]}] (empty to cancel): ", curses.color_pair(3) | curses.A_BOLD)
+     stdscr.refresh()
+
+-    msg_bytes = stdscr.getstr(height - 3, 36, width - 40)
++    msg_bytes = stdscr.getstr(height - 3, 56, width - 60)
+     curses.noecho()
+     curses.curs_set(0)

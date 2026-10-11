@@ -21,9 +21,6 @@ source=("git+https://github.com/Vikyek/rogue-agent-singularity.git#tag=v$pkgver"
         "toon-mcp::git+https://github.com/Vikyek/toon-mcp.git")
 sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
-# /**
-#  * Initializes and fetches local submodules injected via the source array.
-#  */
 prepare() {
     cd "$pkgname"
     git submodule init
@@ -34,9 +31,6 @@ prepare() {
     git -c protocol.file.allow=always submodule update
 }
 
-# /**
-#  * Installs the package components into the pkgdir, relying on already-fetched submodules.
-#  */
 package() {
     cd "$pkgname"
     export GIT_CEILING_DIRECTORIES="$srcdir"

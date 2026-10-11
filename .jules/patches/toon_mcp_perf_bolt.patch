@@ -1,0 +1,204 @@
+From 4f3e5e527f92e648fb22f7df29f7a2bed935c3d4 Mon Sep 17 00:00:00 2001
+From: "google-labs-jules[bot]"
+ <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date: Sat, 10 Oct 2026 13:28:51 +0000
+Subject: [PATCH] =?UTF-8?q?=E2=9A=A1=20Bolt:=20dict=5Fkeys=20fast=20paths,?=
+ =?UTF-8?q?=20iterative=20traversal,=20single-pass=20pattern=20matching?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ src/patterns.py       | 65 ++++++++++++++++++++++++++++---------------
+ src/toon_converter.py | 21 +++++++-------
+ 2 files changed, 53 insertions(+), 33 deletions(-)
+
+diff --git a/src/patterns.py b/src/patterns.py
+index 2a3069d..2585ffd 100644
+--- a/src/patterns.py
++++ b/src/patterns.py
+@@ -95,56 +95,59 @@ class PatternDetector:
+
+     def _traverse(self, data: Any, path: str = '') -> None:
+         """Traverse data and collect key statistics."""
+-        if isinstance(data, dict):
+-            for key, value in data.items():
+-                self.key_frequency[key] += 1
+-                self._traverse(value, f"{path}.{key}")
+-
+-        elif isinstance(data, list):
+-            for i, item in enumerate(data):
+-                self._traverse(item, f"{path}[{i}]")
++        stack = [data]
++        while stack:
++            current = stack.pop()
++            if isinstance(current, dict):
++                self.key_frequency.update(current.keys())
++                stack.extend(current.values())
++            elif isinstance(current, list):
++                stack.extend(current)
+
+     def _detect_api_response(self, data: Any) -> None:
+         """Detect API response patterns."""
+         if not isinstance(data, dict):
+             return
+
+-        matches = sum(1 for key in self.API_RESPONSE_PATTERNS if key in data)
++        matching_keys = [k for k in self.API_RESPONSE_PATTERNS if k in data]
++        matches = len(matching_keys)
+         confidence = matches / len(self.API_RESPONSE_PATTERNS)
+
+         if confidence > 0.3:
+             self.detected_patterns.append(Pattern(
+                 pattern_type='api_response',
+                 confidence=confidence,
+-                keys=[k for k in self.API_RESPONSE_PATTERNS if k in data],
++                keys=matching_keys,
+                 sample=None
+             ))
+
+     def _detect_database_records(self, data: Any) -> None:
+         """Detect database record patterns."""
+         if isinstance(data, dict):
+-            matches = sum(1 for key in self.DATABASE_PATTERNS if key in data)
++            matching_keys = [k for k in self.DATABASE_PATTERNS if k in data]
++            matches = len(matching_keys)
+             confidence = matches / len(self.DATABASE_PATTERNS)
+
+             if confidence > 0.3:
+                 self.detected_patterns.append(Pattern(
+                     pattern_type='database_record',
+                     confidence=confidence,
+-                    keys=[k for k in self.DATABASE_PATTERNS if k in data],
++                    keys=matching_keys,
+                     sample=None
+                 ))
+
+         elif isinstance(data, list) and len(data) > 0:
+             # Check if it's an array of database records
+             if isinstance(data[0], dict):
+-                matches = sum(1 for key in self.DATABASE_PATTERNS if key in data[0])
++                matching_keys = [k for k in self.DATABASE_PATTERNS if k in data[0]]
++                matches = len(matching_keys)
+                 confidence = matches / len(self.DATABASE_PATTERNS)
+
+                 if confidence > 0.3:
+                     self.detected_patterns.append(Pattern(
+                         pattern_type='database_records_array',
+                         confidence=confidence,
+-                        keys=[k for k in self.DATABASE_PATTERNS if k in data[0]],
++                        keys=matching_keys,
+                         count=len(data)
+                     ))
+
+@@ -153,14 +156,15 @@ class PatternDetector:
+         if not isinstance(data, dict):
+             return
+
+-        matches = sum(1 for key in self.USER_PATTERNS if key in data)
++        matching_keys = [k for k in self.USER_PATTERNS if k in data]
++        matches = len(matching_keys)
+         confidence = matches / len(self.USER_PATTERNS)
+
+         if confidence > 0.25:
+             self.detected_patterns.append(Pattern(
+                 pattern_type='user_data',
+                 confidence=confidence,
+-                keys=[k for k in self.USER_PATTERNS if k in data],
++                keys=matching_keys,
+                 sample=None
+             ))
+
+@@ -172,14 +176,15 @@ class PatternDetector:
+         for pattern_name, pattern_keys in self.NESTED_PATTERNS.items():
+             for key, value in data.items():
+                 if isinstance(value, dict):
+-                    matches = sum(1 for pk in pattern_keys if pk in value)
++                    matching_keys = [pk for pk in pattern_keys if pk in value]
++                    matches = len(matching_keys)
+                     confidence = matches / len(pattern_keys)
+
+                     if confidence > 0.5:
+                         self.detected_patterns.append(Pattern(
+                             pattern_type=f'nested_{pattern_name}',
+                             confidence=confidence,
+-                            keys=[pk for pk in pattern_keys if pk in value],
++                            keys=matching_keys,
+                             sample={key: value}
+                         ))
+
+@@ -271,13 +276,27 @@ class PatternDetector:
+         if not arr:
+             return 0.0
+
+-        # Get all unique key sets
+-        key_sets = [set(item.keys()) for item in arr if isinstance(item, dict)]
+-
+-        if not key_sets:
++        first_keys = None
++        all_same = True
++        valid_items = 0
++
++        for item in arr:
++            if isinstance(item, dict):
++                valid_items += 1
++                if first_keys is None:
++                    first_keys = item.keys()
++                elif item.keys() != first_keys:
++                    all_same = False
++                    break
++
++        if valid_items == 0:
+             return 0.0
++
++        if all_same:
++            return 1.0
+
+-        # Calculate consistency based on key overlap
++        # Fallback to set operations for partial overlaps
++        key_sets = [set(item.keys()) for item in arr if isinstance(item, dict)]
+         all_keys = set.union(*key_sets)
+         common_keys = set.intersection(*key_sets)
+
+diff --git a/src/toon_converter.py b/src/toon_converter.py
+index 6fa0fd0..05d590b 100644
+--- a/src/toon_converter.py
++++ b/src/toon_converter.py
+@@ -107,13 +107,14 @@ class TOONConverter:
+
+     def _build_ref_cache(self, data: Any) -> None:
+         """Traverse data and collect key frequencies for aggressive-mode abbreviation."""
+-        if isinstance(data, dict):
+-            for key, value in data.items():
+-                self.key_freq[key] += 1
+-                self._build_ref_cache(value)
+-        elif isinstance(data, list):
+-            for item in data:
+-                self._build_ref_cache(item)
++        stack = [data]
++        while stack:
++            current = stack.pop()
++            if isinstance(current, dict):
++                self.key_freq.update(current.keys())
++                stack.extend(current.values())
++            elif isinstance(current, list):
++                stack.extend(current)
+
+     def _build_custom_abbrev(self) -> Dict[str, str]:
+         """
+@@ -178,10 +179,10 @@ class TOONConverter:
+             return []
+
+         if all(isinstance(item, dict) for item in arr):
+-            key_sets = [set(item.keys()) for item in arr]
+-            if len({tuple(sorted(ks)) for ks in key_sets}) == 1:
++            first_keys = arr[0].keys()
++            if all(item.keys() == first_keys for item in arr[1:]):
+                 # All objects have identical keys — encode as schema + value rows
+-                keys = sorted(arr[0].keys())
++                keys = sorted(first_keys)
+                 compressed_keys = [self._abbrev_key(k) for k in keys]
+                 return {
+                     '_sch': compressed_keys,
+--
+2.53.0
