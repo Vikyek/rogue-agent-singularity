@@ -69,6 +69,11 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
                 (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --forward < "$patch_file" || info "Patch $patch_name might already be applied.")
             fi
 
+            # Apply paru_wrapper_regex.patch to paru-wrapper directory
+            if [[ "$patch_name" == "paru_wrapper_regex.patch" ]]; then
+                (cd "$SCRIPT_DIR/paru-wrapper" && patch -p1 --forward < "$patch_file" || info "Patch $patch_name might already be applied.")
+            fi
+
             # Apply toon_mcp_perf.patch to toon-mcp submodule
             if [[ "$patch_name" == "toon_mcp_perf.patch" ]]; then
                 (cd "$SCRIPT_DIR/toon-mcp" && {
