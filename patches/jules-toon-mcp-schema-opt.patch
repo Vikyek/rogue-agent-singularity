@@ -1,0 +1,65 @@
+From 258563cd30efa8514c459ef873ae8974d1db260d Mon Sep 17 00:00:00 2001
+From: "google-labs-jules[bot]"
+ <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date: Thu, 17 Sep 2026 03:26:26 +0000
+Subject: [PATCH] perf: optimize dict schema consistency
+
+---
+ src/patterns.py       | 15 +++++++++++----
+ src/toon_converter.py | 13 +++++++++++++
+ 2 files changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/src/patterns.py b/src/patterns.py
+index 2a3069d..68a1272 100644
+--- a/src/patterns.py
++++ b/src/patterns.py
+@@ -271,12 +271,19 @@ class PatternDetector:
+         if not arr:
+             return 0.0
+
+-        # Get all unique key sets
+-        key_sets = [set(item.keys()) for item in arr if isinstance(item, dict)]
+-
+-        if not key_sets:
++        valid_items = [item for item in arr if isinstance(item, dict)]
++        if not valid_items:
+             return 0.0
+
++        first_keys = valid_items[0].keys()
++
++        # Fast path optimization natively in C without allocation
++        if all(item.keys() == first_keys for item in valid_items):
++            return 1.0
++
++        # Get all unique key sets
++        key_sets = [set(item.keys()) for item in valid_items]
++
+         # Calculate consistency based on key overlap
+         all_keys = set.union(*key_sets)
+         common_keys = set.intersection(*key_sets)
+diff --git a/src/toon_converter.py b/src/toon_converter.py
+index 6fa0fd0..9e69f24 100644
+--- a/src/toon_converter.py
++++ b/src/toon_converter.py
+@@ -178,6 +178,19 @@ class TOONConverter:
+             return []
+
+         if all(isinstance(item, dict) for item in arr):
++            first_keys = arr[0].keys()
++            # Fast path optimization checking exact match
++            if all(item.keys() == first_keys for item in arr):
++                keys = sorted(arr[0].keys())
++                compressed_keys = [self._abbrev_key(k) for k in keys]
++                return {
++                    '_sch': compressed_keys,
++                    '_dat': [
++                        [self._convert_to_toon(item[k]) for k in keys]
++                        for item in arr
++                    ],
++                }
++
+             key_sets = [set(item.keys()) for item in arr]
+             if len({tuple(sorted(ks)) for ks in key_sets}) == 1:
+                 # All objects have identical keys — encode as schema + value rows
+--
+2.53.0
