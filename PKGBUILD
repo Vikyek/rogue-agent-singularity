@@ -7,7 +7,7 @@ arch=('any')
 url="https://github.com/Vikyek/rogue-agent-singularity"
 license=('MIT')
 depends=('python' 'bash')
-makedepends=('git' 'make')
+makedepends=('git')
 optdepends=(
     'agv-dispatcher: Token-efficient task dispatcher & self-scaling orchestrator'
     'jules-vanager: Google Jules API Manager, Listener Daemon, TUI, and Conky HUD'
@@ -15,11 +15,12 @@ optdepends=(
     'toon-mcp: TOON-format token optimization MCP server'
 )
 source=("git+https://github.com/Vikyek/rogue-agent-singularity.git#tag=v$pkgver"
+        "vras-submodule.1::man1/vras-submodule.1"
         "agv-dispatcher::git+https://github.com/Vikyek/agv-dispatcher.git"
         "jules-vanager::git+https://github.com/Vikyek/jules-vanager.git"
         "agv-syncengine::git+https://github.com/Vikyek/agv-syncengine.git"
         "toon-mcp::git+https://github.com/Vikyek/toon-mcp.git")
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 prepare() {
     cd "$pkgname"
