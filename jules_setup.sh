@@ -79,6 +79,11 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
                     fi
                 })
             fi
+
+            # Apply paru-wrapper.patch to paru-wrapper directory
+            if [[ "$patch_name" == "paru-wrapper.patch" ]]; then
+                (cd "$SCRIPT_DIR/paru-wrapper" && patch -p1 --forward < "$patch_file" || info "Patch $patch_name might already be applied.")
+            fi
         fi
     done
 fi
