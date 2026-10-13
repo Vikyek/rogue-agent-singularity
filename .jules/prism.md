@@ -1,3 +1,3 @@
-## 2024-05-24 - Semantic Logging in Shell Scripts
-**Learning:** Raw `echo` statements in setup scripts lead to unstructured walls of text. Standardized functions (`info`, `warn`, `error`, `success`) equipped with ANSI colors significantly improve developer scannability, provided they check `NO_COLOR` and route errors to stderr.
-**Action:** Always implement and use a `NO_COLOR`-compliant logging block with proper stdout/stderr separation instead of plain `echo` for long shell setup sequences. Use `>/dev/null` for spammy standard command outputs (like `pip install`) to keep logs concise while preserving their internal error traces.
+## 2026-09-10 - Inverted NO_COLOR logic
+**Learning:** Checking `[[ -v NO_COLOR ]]` to enable colors is an anti-pattern that breaks standard CLI UX guidelines. `NO_COLOR` should be used to disable colors when set, not enable them.
+**Action:** Always use `if [[ -z "${NO_COLOR:-}" ]]; then` to enable colors by default and disable them when `NO_COLOR` is present.
