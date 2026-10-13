@@ -79,9 +79,15 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
                     fi
                 })
             fi
+
+            # Apply paru-wrapper patches
+            if [[ "$patch_name" == "paru-wrapper-integrator.patch" && -d "$SCRIPT_DIR/paru-wrapper" ]]; then
+                (cd "$SCRIPT_DIR/paru-wrapper" && patch -p1 --forward < "$patch_file" || info "Patch $patch_name might already be applied.")
+            fi
         fi
     done
 fi
+
 
 VENV_DIR="${HOME}/.local/share/toon-venv"
 if [ ! -d "$VENV_DIR" ]; then

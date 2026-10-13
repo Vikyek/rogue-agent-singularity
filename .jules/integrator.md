@@ -1,0 +1,3 @@
+## 2026-09-23 - Integrator: fix paru awk parsing drift
+**Learning:** `paru` and `pacman` multi-line dependency outputs use strict formatting with colons (e.g., `Optional Deps :`). Parsing this with loose alphabetic regex like `/^[a-zA-Z]/` causes parsing drift and early truncation when multi-line entries wrap.
+**Action:** When parsing sections headers in pacman/paru stdout (like `Depends On :`), use stricter format-matching regex like `/^[A-Z][a-zA-Z -]*[[:space:]]*:/` to robustly detect headers and ignore wrapped dependency lines. When patching external tools, ensure `jules_setup.sh` patch blocks are placed *inside* the generic `for` loop so they actually trigger.
