@@ -4,4 +4,4 @@
 
 ## 2026-11-01 - Nested submodules break agent PRs
 **Learning:** Bumping a submodule pointer to a local-only commit produces an uncloneable tree; code review flags it, but only after work is done.
-**Action:** Detect nested remotes up front. If no push access, ship changes as a patch + apply script and leave all gitlinks untouched.
+**Action:** Detect nested remotes up front. If no push access, ship changes as a patch named to match existing glob patterns in setup script and leave all gitlinks untouched.
