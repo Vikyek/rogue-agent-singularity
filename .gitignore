@@ -2,3 +2,9 @@ package.json
 .codegraph/
 *.log
 .vault_credentials.env
+rogue-agent-singularity/
+jules-vanager/
+agv-syncengine/
+pkg/
+src/
+*.pkg.tar.*
