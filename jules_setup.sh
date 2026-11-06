@@ -79,6 +79,19 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
                     fi
                 })
             fi
+
+            # Apply paru-wrapper patches to paru-wrapper directory
+            if [[ "$patch_name" == "paru-wrapper-parsing.patch" ]]; then
+                if [ -d "$SCRIPT_DIR/paru-wrapper" ]; then
+                    (cd "$SCRIPT_DIR/paru-wrapper" && {
+                        if git apply --check --reverse "$patch_file" >/dev/null 2>&1; then
+                            info "Patch $patch_name might already be applied."
+                        else
+                            git apply "$patch_file" || { error "Failed to apply $patch_name"; return 1 2>/dev/null || exit 1; }
+                        fi
+                    })
+                fi
+            fi
         fi
     done
 fi
