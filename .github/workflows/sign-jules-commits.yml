@@ -42,6 +42,12 @@ jobs:
           git config --global user.name "${{ steps.import-gpg.outputs.name }}"
           git config --global user.email "${{ steps.import-gpg.outputs.email }}"
 
+          # Validate head_ref to prevent command injection
+          if [[ ! "${{ github.head_ref }}" =~ ^[A-Za-z0-9._/-]+$ ]] || [[ "${{ github.head_ref }}" == -* ]] || [[ "${{ github.head_ref }}" == *..* ]]; then
+            echo "Invalid branch ref detected, aborting sign process."
+            exit 1
+          fi
+
           # Identify base branch divergence point
           BASE_SHA=$(git merge-base origin/${{ github.base_ref }} HEAD)
 
