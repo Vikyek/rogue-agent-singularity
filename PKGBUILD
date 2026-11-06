@@ -35,4 +35,5 @@ package() {
     cd "$pkgname"
     export GIT_CEILING_DIRECTORIES="$srcdir"
     make install DESTDIR="$pkgdir" PREFIX=/usr
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
