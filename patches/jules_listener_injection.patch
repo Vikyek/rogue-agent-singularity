@@ -1,7 +1,31 @@
+commit b221e9b5e08ddb68707c23b345341e7d6bae4690
+Author: Test User <test@example.com>
+Date:   Sat Oct 10 17:12:46 2026 +0000
+
+    🛡️ Sentinel: [CRITICAL] Fix command injection in subprocess.run
+
 diff --git a/jules_listener.py b/jules_listener.py
-index 9ac8caf..32b4f56 100755
+index 9ac8caf..03d3b1b 100755
 --- a/jules_listener.py
 +++ b/jules_listener.py
+@@ -106,7 +106,7 @@ def check_and_handle_jules_prs(repo_path):
+             or any(char.isdigit() for char in branch.split("-")[-1]) and len(branch.split("-")[-1]) >= 15
+         )
+         if is_jules:
+-            comments_res = subprocess.run(["gh", "pr", "view", str(number), "--json", "comments,reviews"], cwd=repo_path, capture_output=True, text=True)
++            comments_res = subprocess.run(["gh", "pr", "view", "--json", "comments,reviews", "--", str(number)], cwd=repo_path, capture_output=True, text=True)
+             has_review_issues = False
+             review_feedback = ""
+             if comments_res.returncode == 0:
+@@ -137,7 +137,7 @@ def check_and_handle_jules_prs(repo_path):
+                     syntax_clean = False
+
+             if syntax_clean and mergeable == "MERGEABLE" and not has_review_issues:
+-                merge_cmd = ["gh", "pr", "merge", str(number), "--merge"]
++                merge_cmd = ["gh", "pr", "merge", "--merge", "--", str(number)]
+                 m_res = subprocess.run(merge_cmd, cwd=repo_path, capture_output=True, text=True)
+                 merged = m_res.returncode == 0
+             else:
 @@ -200,8 +200,8 @@ def run_pass():
              status = "MERGED" if h["merged"] else "NEEDS REVIEW / CONFLICTS"
              print(f"  -> [{h['repo']}] PR #{h['pr_number']} ({h['branch']}): {status}")
