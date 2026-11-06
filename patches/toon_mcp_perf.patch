@@ -26,10 +26,32 @@ index 2a3069d..1b65f1d 100644
          all_keys = set.union(*key_sets)
          common_keys = set.intersection(*key_sets)
 diff --git a/src/toon_converter.py b/src/toon_converter.py
-index 6fa0fd0..a93915a 100644
+index 6fa0fd0..58b8e31 100644
 --- a/src/toon_converter.py
 +++ b/src/toon_converter.py
-@@ -177,11 +177,14 @@ class TOONConverter:
+@@ -107,13 +107,14 @@ class TOONConverter:
+
+     def _build_ref_cache(self, data: Any) -> None:
+         """Traverse data and collect key frequencies for aggressive-mode abbreviation."""
+-        if isinstance(data, dict):
+-            for key, value in data.items():
+-                self.key_freq[key] += 1
+-                self._build_ref_cache(value)
+-        elif isinstance(data, list):
+-            for item in data:
+-                self._build_ref_cache(item)
++        stack = [data]
++        while stack:
++            current = stack.pop()
++            if isinstance(current, dict):
++                self.key_freq.update(current.keys())
++                stack.extend(current.values())
++            elif isinstance(current, list):
++                stack.extend(current)
+
+     def _build_custom_abbrev(self) -> Dict[str, str]:
+         """
+@@ -177,11 +178,20 @@ class TOONConverter:
          if not arr:
              return []
 
@@ -41,7 +63,13 @@ index 6fa0fd0..a93915a 100644
 +        if isinstance(first_item, dict):
 +            first_keys = first_item.keys()
 +            # Fast fail check if all items are dicts with the same keys as the first item
-+            if all(isinstance(item, dict) and item.keys() == first_keys for item in arr):
++            all_match = True
++            for item in arr:
++                if not isinstance(item, dict) or item.keys() != first_keys:
++                    all_match = False
++                    break
++
++            if all_match:
                  # All objects have identical keys — encode as schema + value rows
 -                keys = sorted(arr[0].keys())
 +                keys = sorted(first_keys)
