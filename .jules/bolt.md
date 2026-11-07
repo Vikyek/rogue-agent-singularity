@@ -17,27 +17,67 @@
 ## 2026-09-04 - [Optimize Array Comprehension for TOON Object Schemas]
 **Learning:** Generating sets out of Python dictionary keys and doing set unions/intersections on them is extremely inefficient for checking if a list of dictionaries all have identical schema keys. Doing `if item.keys() == first_item.keys()` is dramatically faster because Python dictionaries natively optimize `dict_keys` comparisons and it doesn't instantiate any `set` or `tuple` copies.
 **Action:** When validating uniformity of dictionary schemas in large arrays, use the `dict_keys` equality view (`item.keys() == first_keys`) rather than doing expensive conversions to `set` and `tuple` for every item.
+
 ## $(date +%Y-%m-%d) - Optimize schema consistency pattern detection
 **Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries, which are common in JSON APIs.
 **Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C (order-agnostic in Python 3), but still allocates the `valid_items` list for each array, so it does not provide O(1) space. It remains a fast O(N) time optimization before falling back to expensive `set` operations.
+
 ## 2026-09-27 - Optimize Array Comprehension and Recursion Overhead
 **Learning:** Generating sets out of Python dictionary keys and doing recursive python tree traversals when calculating dictionary frequencies is extremely slow and causes excessive allocations. Dictionaries natively evaluate key equality very fast with `item.keys() == first_keys` and bulk add counts to collections using `Counter.update()` without creating new memory or nested function frames.
 **Action:** When validating dictionary arrays or counting key frequencies in deep structures, always use `dict_keys` comparison fast paths, and `Counter.update()` coupled with iterative stack traversals rather than mapping to sets or using recursion.
+
 ## 2026-10-10 - Parent-repo reviewers are blind to submodule diffs
 **Learning:** Committing inside the submodule still yields only a gitlink bump; GitHub cannot diff mode-160000 entries, and the sandbox lacks push creds for submodule remotes, so Bolt tasks there always stall at review.
 **Action:** Any task touching a submodule must (a) emit a format-patch artifact in the parent PR and (b) flag itself as a two-PR job at PLAN time, before edits.
+
 ## 2026-09-28 - Optimize Dictionary Key Fast Paths
 **Learning:** Generating sets out of Python dictionary keys and doing recursive python tree traversals is extremely slow. Dictionaries natively evaluate key equality very fast with `item.keys() == first_keys` and bulk add counts using `Counter.update()` without creating new memory or nested frames.
 **Action:** When validating dictionary arrays or counting key frequencies in deep structures, always use `dict_keys` comparison fast paths, and `Counter.update()` coupled with iterative stack traversals rather than mapping to sets or using recursion.
+
 ## 2026-10-06 - Batch bash operations to avoid subshells in loops
 **Learning:** The implementation scans the pre-fetched status output once per module using a native bash `while read` loop. This avoids spawning external `grep` and `awk` processes inside the loop, but does not provide O(1) lookups.
 **Action:** Use a native bash `while read` loop and string manipulation to scan the status output for each module, rather than creating subshells and piping text to external utilities like `grep` or `awk`.
+
 ## 2026-10-06 - Optimize Dictionary Array Schema Validations
 **Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries.
 **Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C, drastically improving runtime for the common case of identical schemas.
+
 ## 2026-10-10 - Submodule changes are invisible to the parent-repo reviewer
 **Learning:** A gitlink bump carries no diff, so reviewers reject perf work done inside submodules; the sandbox also lacks push creds for submodule remotes.
 **Action:** Always emit .jules/patches/<submodule>-<branch>.patch and embed the diff in the PR body; flag submodule tasks as needing a companion PR up front.
+
 ## 2025-02-18 - Avoid generator overhead in critical path loops
 **Learning:** Even when using fast paths like `dict_keys` equality, wrapping the check in an `all()` generator expression introduces overhead compared to an explicit for loop with a break statement.
 **Action:** In heavily utilized compression paths, prefer explicit for loops with early exit over Python generator expressions.
+
+## 2026-10-24 - Replace recursive dictionary traversal with iterative Counter.update
+**Learning:** When aggregating key frequencies in deep or large JSON dictionaries (e.g., using `Counter`), recursive traversal with individual key increments is slow due to Python function call overhead.
+**Action:** Replace recursive traversal with an iterative stack-based approach and use bulk native operations like `Counter.update(dict.keys())` to minimize overhead and process keys natively in C.
+
+## 2026-09-19 - Optimize schema consistency pattern detection
+**Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries, which are common in JSON APIs.
+**Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C (order-agnostic in Python 3), but still allocates the `valid_items` list for each array, so it does not provide O(1) space. It remains a fast O(N) time optimization before falling back to expensive `set` operations.
+
+## 2026-09-19 - Optimize key tracking and recursive traversal in TOON Converter
+**Learning:** Heavy JSON processing suffers significantly from Python recursive call overhead.
+**Action:** When aggregating key frequencies in deep or large JSON dictionaries (e.g., using `Counter`), replace recursive traversal with an iterative stack-based approach and use bulk native operations like `Counter.update(dict.keys())` to minimize Python function call overhead and process keys natively in C.
+
+## 2025-01-20 - Optimize schema consistency pattern detection
+**Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries, which are common in JSON APIs.
+**Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C (order-agnostic in Python 3), but still allocates the `valid_items` list for each array, so it does not provide O(1) space. It remains a fast O(N) time optimization before falling back to expensive `set` operations.
+
+## 2026-09-15 - [Optimize JSON key frequency collection]
+**Learning:** When aggregating key frequencies in deep or large JSON dictionaries (e.g., using `Counter`), recursive traversal incurs significant Python function call overhead.
+**Action:** Replaced recursive traversal with an iterative stack-based approach and used bulk native operations like `Counter.update(dict.keys())` to minimize overhead and process keys natively in C.
+
+## $(date +%Y-%m-%d) - Optimize tree traversal with stack and native bulk operations
+**Learning:** In large JSON trees (e.g., API payloads processed by `toon-mcp`), recursive dictionary traversals like `_build_ref_cache` and `_traverse` incur substantial Python function call overhead and can hit recursion depth limits. Additionally, interpolating a `path` string (e.g., `f"{path}.{key}"`) at every node that is never actually consumed wastes significant CPU cycles.
+**Action:** Replace deep recursion with iterative stack-based traversal (adding items via `.extend()`). Also, when aggregating frequencies into a `collections.Counter`, use the native `.update(dict.keys())` method to bypass slow Python `for` loops in favor of fast native C implementations.
+
+## 2026-09-13 - Optimize schema consistency pattern detection
+**Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries, which are common in JSON APIs.
+**Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C (order-agnostic in Python 3), but still allocates the `valid_items` list for each array, so it does not provide O(1) space. It remains a fast O(N) time optimization before falling back to expensive `set` operations.
+
+## 2026-09-12 - Optimize JSON traversal loops
+**Learning:** Recursively traversing deep or large JSON dictionaries and arrays to collect key frequencies is slow due to Python function call overhead and manual element iteration.
+**Action:** For simple aggregation tasks like `Counter` frequencies, always prefer an iterative stack-based traversal and use bulk native operations like `Counter.update(dict.keys())` to process dictionary keys in C, yielding significant performance gains.
