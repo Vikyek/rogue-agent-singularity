@@ -23,3 +23,7 @@
 ## 2026-09-27 - Optimize Array Comprehension and Recursion Overhead
 **Learning:** Generating sets out of Python dictionary keys and doing recursive python tree traversals when calculating dictionary frequencies is extremely slow and causes excessive allocations. Dictionaries natively evaluate key equality very fast with `item.keys() == first_keys` and bulk add counts to collections using `Counter.update()` without creating new memory or nested function frames.
 **Action:** When validating dictionary arrays or counting key frequencies in deep structures, always use `dict_keys` comparison fast paths, and `Counter.update()` coupled with iterative stack traversals rather than mapping to sets or using recursion.
+
+## $(date +%Y-%m-%d) - Use stack for deep dictionary structure processing
+**Learning:** Using element-wise count aggregation by iterating over `.items()` and triggering deep recursive calls hits recursion limits and allocates significant memory in Python.
+**Action:** When extracting deep dictionary insights such as key frequencies, use a fast path stack loop and bulk update collections via `Counter.update()` rather than full recursive passes.
