@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
-# vras-submodule — Simple CLI to list, enable, disable, or toggle VRAS submodules
-# Usage: vras-submodule [list|enable|disable|toggle|install] [module]
+
+# /**
+#  * Simple CLI to list, enable, disable, or toggle VRAS submodules.
+#  * Usage: vras-submodule [list|enable|disable|toggle|install] [module]
+#  *
+#  * @param $1 - The action to perform (e.g., list, enable, disable, toggle).
+#  * @param $2 - Optional specific module to target.
+#  * @throws Exits with code 1 if the VRAS root directory cannot be located.
+#  */
 
 set -euo pipefail
 
@@ -42,7 +49,6 @@ ALL_MODULES=("agv-dispatcher" "jules-vanager" "agv-syncengine" "toon-mcp")
 
 # /**
 #  * Checks if a given submodule is enabled (initialized).
-#  * Respects NO_COLOR for accessible terminal output.
 #  *
 #  * @param $1 - The module name to check.
 #  * @param $2 - Optional pre-fetched git status line to avoid a redundant git call.

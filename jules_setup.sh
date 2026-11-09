@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# /**
+#  * Initializes the VRAS ecosystem environment.
+#  *
+#  * Bootstraps the local workspace by setting up credentials, initializing
+#  * submodules, applying patches, and creating an isolated virtual environment.
+#  *
+#  * @throws Exits with code 1 if submodules, patches, or dependencies fail.
+#  */
+
 # Setup colors and output helpers
 if [[ -v NO_COLOR ]]; then
     C_INFO='\033[1;34m'
@@ -88,7 +97,7 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
             info "Applying $patch_name..."
 
             # Apply jules_listener_injection.patch to agv-dispatcher/modules/jules-vanager submodule
-            if [[ "$patch_name" == "jules_listener_injection.patch" || "$patch_name" == "jules_listener_gh_injection.patch" || "$patch_name" == jules-tui-*.patch || "$patch_name" == "jules_manager.patch" ]]; then
+            if [[ "$patch_name" == "jules_listener_injection.patch" || "$patch_name" == "jules_listener_gh_injection.patch" || "$patch_name" == jules-tui-*.patch ]]; then
                 if (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --reverse --dry-run < "$patch_file" >/dev/null 2>&1); then
                     info "Patch $patch_name might already be applied."
                 else
@@ -96,13 +105,30 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
                 fi
             fi
 
+            if [[ "$patch_name" == "jules_manager.patch" ]]; then
+                if (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p3 --reverse --dry-run < "$patch_file" >/dev/null 2>&1); then
+                    info "Patch $patch_name might already be applied."
+                else
+                    (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p3 --forward < "$patch_file") || { error "Failed to apply $patch_name"; return 1 2>/dev/null || exit 1; }
+                fi
+            fi
+
             # Apply toon_mcp_perf.patch to toon-mcp submodule
-            if [[ "$patch_name" == "toon_mcp_perf.patch" || "$patch_name" == "toon_mcp_perf_iteration.patch" ]]; then
+            if [[ "$patch_name" == "toon_mcp_perf.patch" ]]; then
                 (cd "$SCRIPT_DIR/toon-mcp" && {
                     if git apply --check --reverse "$patch_file" >/dev/null 2>&1; then
                         info "Patch $patch_name might already be applied."
                     else
                         git apply "$patch_file" || { error "Failed to apply $patch_name"; return 1 2>/dev/null || exit 1; }
+                    fi
+                })
+            fi
+            if [[ "$patch_name" == "toon_mcp_perf_iteration.patch" ]]; then
+                (cd "$SCRIPT_DIR/toon-mcp" && {
+                    if git apply --check --reverse "$patch_file" >/dev/null 2>&1; then
+                        info "Patch $patch_name might already be applied."
+                    else
+                        git apply --3way "$patch_file" || { echo -e "\033[1;33m[WARN]\033[0m Patch $patch_name failed to apply cleanly. Skipping."; }
                     fi
                 })
             fi
