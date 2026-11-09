@@ -1,0 +1,52 @@
+From 31e37ea46035cd6fabfad577ffb93e6fe2831d37 Mon Sep 17 00:00:00 2001
+From: "google-labs-jules[bot]"
+ <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date: Mon, 28 Sep 2026 22:08:21 +0000
+Subject: [PATCH] Add Sphinx docstrings
+
+---
+ src/toon_converter.py | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/src/toon_converter.py b/src/toon_converter.py
+index 6fa0fd0..5cebb15 100644
+--- a/src/toon_converter.py
++++ b/src/toon_converter.py
+@@ -278,12 +278,12 @@ def convert_json_to_toon(json_data: Union[Dict, List, str], aggressive: bool = F
+     """
+     Convenience function to convert JSON to TOON.
+
+-    Args:
+-        json_data: JSON data to convert
+-        aggressive: Use aggressive compression (auto-abbreviates domain-specific keys)
+-
+-    Returns:
+-        TOON formatted string
++    :param json_data: JSON data to convert
++    :type json_data: Union[Dict, List, str]
++    :param aggressive: Use aggressive compression (auto-abbreviates domain-specific keys)
++    :type aggressive: bool
++    :returns: TOON formatted string
++    :rtype: str
+     """
+     converter = TOONConverter(aggressive=aggressive)
+     return converter.json_to_toon(json_data)
+@@ -293,11 +293,11 @@ def convert_toon_to_json(toon_str: str) -> str:
+     """
+     Convenience function to convert TOON to JSON.
+
+-    Args:
+-        toon_str: TOON formatted string
+-
+-    Returns:
+-        Standard JSON string
++    :param toon_str: TOON formatted string
++    :type toon_str: str
++    :returns: Standard JSON string
++    :rtype: str
++    :raises ValueError: When the TOON format is invalid or missing version
+     """
+     converter = TOONConverter()
+     return converter.toon_to_json(toon_str)
+--
+2.53.0

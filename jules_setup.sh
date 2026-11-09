@@ -99,7 +99,7 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
             fi
 
             # Apply toon_mcp_perf.patch to toon-mcp submodule
-            if [[ "$patch_name" == "toon_mcp_perf.patch" || "$patch_name" == "toon_mcp_perf_iteration.patch" ]]; then
+            if [[ "$patch_name" == "toon_mcp_perf.patch" || "$patch_name" == "toon_mcp_perf_iteration.patch" || "$patch_name" == "toon-mcp-docstrings.patch" ]]; then
                 (cd "$SCRIPT_DIR/toon-mcp" && {
                     if git apply --check --reverse "$patch_file" >/dev/null 2>&1; then
                         info "Patch ${C_BOLD}$patch_name${C_RST} might already be applied."
