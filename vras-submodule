@@ -159,7 +159,7 @@ cmd_disable() {
 #  *
 #  * @param $1 - The module name to toggle.
 #  * @returns 0 on success.
-#  * @throws Exits with code 1 if no module is provided.
+#  * @throws {ExitStatus} 1 if no module is provided.
 #  */
 cmd_toggle() {
     local target="${1:-}"
