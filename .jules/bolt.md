@@ -20,3 +20,10 @@
 ## $(date +%Y-%m-%d) - Optimize schema consistency pattern detection
 **Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries, which are common in JSON APIs.
 **Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C (order-agnostic in Python 3), but still allocates the `valid_items` list for each array, so it does not provide O(1) space. It remains a fast O(N) time optimization before falling back to expensive `set` operations.
+## 2025-01-20 - Optimize array schema consistency check
+**Learning:** Checking dictionary schema consistency using set operations (`set(item.keys())`, `len({tuple(sorted(ks)) ...})`) is extremely inefficient for arrays of homogeneous JSON dictionaries. Doing `item.keys() == first_item.keys()` natively compares `dict_keys` sets in C, avoiding expensive object allocations.
+**Action:** Always use native `dict_keys` equality view (`item.keys() == first_item.keys()`) when checking if a list of dictionaries all have identical keys to drastically improve compression performance for large JSON arrays.
+
+## 2025-01-20 - Optimize Dictionary Traversal in TOON Converter
+**Learning:** The `_build_ref_cache` method used recursive traversal and incremented counts in a Python loop. When aggregating key frequencies in deep or large JSON dictionaries (e.g., using Counter), replacing recursive traversal with an iterative stack-based approach and using bulk native operations like `Counter.update(dict.keys())` minimizes Python function call overhead and processes keys natively in C.
+**Action:** Replace recursive `_build_ref_cache` with an iterative stack traversal and use `self.key_freq.update(current.keys())`. Ensure there is no `isinstance` overhead inside the loop.

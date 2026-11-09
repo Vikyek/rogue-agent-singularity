@@ -1,0 +1,39 @@
+From b7d7733d1e24edc6f9a769ee1f5721923dcc4b17 Mon Sep 17 00:00:00 2001
+From: "google-labs-jules[bot]"
+ <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date: Mon, 9 Nov 2026 11:37:57 +0000
+Subject: [PATCH] optimize ref cache builder
+
+---
+ src/toon_converter.py | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/src/toon_converter.py b/src/toon_converter.py
+index 6fa0fd0..9b9ae07 100644
+--- a/src/toon_converter.py
++++ b/src/toon_converter.py
+@@ -107,13 +107,15 @@ class TOONConverter:
+
+     def _build_ref_cache(self, data: Any) -> None:
+         """Traverse data and collect key frequencies for aggressive-mode abbreviation."""
+-        if isinstance(data, dict):
+-            for key, value in data.items():
+-                self.key_freq[key] += 1
+-                self._build_ref_cache(value)
+-        elif isinstance(data, list):
+-            for item in data:
+-                self._build_ref_cache(item)
++        stack = [data]
++        while stack:
++            current = stack.pop()
++            if isinstance(current, dict):
++                # Optimization: use fast bulk update for Counter
++                self.key_freq.update(current.keys())
++                stack.extend(current.values())
++            elif isinstance(current, list):
++                stack.extend(current)
+
+     def _build_custom_abbrev(self) -> Dict[str, str]:
+         """
+--
+2.53.0
