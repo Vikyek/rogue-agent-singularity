@@ -1,0 +1,109 @@
+From 47ac00aaa6c184e06e8b6424bcd55eafbcb7eed3 Mon Sep 17 00:00:00 2001
+From: "google-labs-jules[bot]"
+ <161369871+google-labs-jules[bot]@users.noreply.github.com>
+Date: Mon, 9 Nov 2026 19:42:56 +0000
+Subject: [PATCH] perf optimization
+
+---
+ src/patterns.py       | 39 ++++++++++++++++-----------------------
+ src/toon_converter.py | 19 ++++++++++---------
+ 2 files changed, 26 insertions(+), 32 deletions(-)
+
+diff --git a/src/patterns.py b/src/patterns.py
+index 2a3069d..55a4f04 100644
+--- a/src/patterns.py
++++ b/src/patterns.py
+@@ -228,25 +228,15 @@ class PatternDetector:
+
+         structure_hashes: Counter = Counter()
+
+-        def hash_structure(obj: Any) -> Optional[str]:
+-            """Create a hash of object structure."""
+-            if isinstance(obj, dict):
+-                return '|'.join(sorted(obj.keys()))
+-            return None
+-
+-        def collect_structures(d: Any):
+-            """Collect all structure hashes."""
+-            if isinstance(d, dict):
+-                h = hash_structure(d)
+-                if h:
+-                    structure_hashes[h] += 1
+-                for v in d.values():
+-                    collect_structures(v)
+-            elif isinstance(d, list):
+-                for item in d:
+-                    collect_structures(item)
+-
+-        collect_structures(data)
++        stack = [data]
++        while stack:
++            current = stack.pop()
++            if isinstance(current, dict):
++                if current:
++                    structure_hashes['|'.join(sorted(current.keys()))] += 1
++                stack.extend(current.values())
++            elif isinstance(current, list):
++                stack.extend(current)
+
+         # Find repeated structures
+         for structure, count in structure_hashes.items():
+@@ -272,12 +262,15 @@ class PatternDetector:
+             return 0.0
+
+         # Get all unique key sets
+-        key_sets = [set(item.keys()) for item in arr if isinstance(item, dict)]
+-
+-        if not key_sets:
++        valid_items = [item for item in arr if isinstance(item, dict)]
++        if not valid_items:
+             return 0.0
+
+-        # Calculate consistency based on key overlap
++        first_keys = valid_items[0].keys()
++        if all(item.keys() == first_keys for item in valid_items):
++            return 1.0
++
++        key_sets = [set(item.keys()) for item in valid_items]
+         all_keys = set.union(*key_sets)
+         common_keys = set.intersection(*key_sets)
+
+diff --git a/src/toon_converter.py b/src/toon_converter.py
+index 6fa0fd0..5b8d200 100644
+--- a/src/toon_converter.py
++++ b/src/toon_converter.py
+@@ -107,13 +107,14 @@ class TOONConverter:
+
+     def _build_ref_cache(self, data: Any) -> None:
+         """Traverse data and collect key frequencies for aggressive-mode abbreviation."""
+-        if isinstance(data, dict):
+-            for key, value in data.items():
+-                self.key_freq[key] += 1
+-                self._build_ref_cache(value)
+-        elif isinstance(data, list):
+-            for item in data:
+-                self._build_ref_cache(item)
++        stack = [data]
++        while stack:
++            current = stack.pop()
++            if isinstance(current, dict):
++                self.key_freq.update(current.keys())
++                stack.extend(current.values())
++            elif isinstance(current, list):
++                stack.extend(current)
+
+     def _build_custom_abbrev(self) -> Dict[str, str]:
+         """
+@@ -178,8 +179,8 @@ class TOONConverter:
+             return []
+
+         if all(isinstance(item, dict) for item in arr):
+-            key_sets = [set(item.keys()) for item in arr]
+-            if len({tuple(sorted(ks)) for ks in key_sets}) == 1:
++            first_keys = arr[0].keys()
++            if all(item.keys() == first_keys for item in arr):
+                 # All objects have identical keys — encode as schema + value rows
+                 keys = sorted(arr[0].keys())
+                 compressed_keys = [self._abbrev_key(k) for k in keys]
+--
+2.53.0
