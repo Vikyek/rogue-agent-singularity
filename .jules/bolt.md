@@ -17,6 +17,10 @@
 ## 2026-09-04 - [Optimize Array Comprehension for TOON Object Schemas]
 **Learning:** Generating sets out of Python dictionary keys and doing set unions/intersections on them is extremely inefficient for checking if a list of dictionaries all have identical schema keys. Doing `if item.keys() == first_item.keys()` is dramatically faster because Python dictionaries natively optimize `dict_keys` comparisons and it doesn't instantiate any `set` or `tuple` copies.
 **Action:** When validating uniformity of dictionary schemas in large arrays, use the `dict_keys` equality view (`item.keys() == first_keys`) rather than doing expensive conversions to `set` and `tuple` for every item.
-## $(date +%Y-%m-%d) - Optimize schema consistency pattern detection
+## 2026-11-09 - Optimize schema consistency pattern detection
 **Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries, which are common in JSON APIs.
 **Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C (order-agnostic in Python 3), but still allocates the `valid_items` list for each array, so it does not provide O(1) space. It remains a fast O(N) time optimization before falling back to expensive `set` operations.
+
+## 2026-11-09 - Submodule Git commit strategy for downstream patches
+**Learning:** In projects where direct submodule modifications are not allowed and changes must be distributed via external patch files (e.g. `jules_setup.sh`), modifying the submodule directly inside the project root without resetting it leads to a dirty tree or incorrect git pointer commit changes.
+**Action:** When asked to optimize a submodule that uses a patching mechanism in the parent repo, modify the corresponding patch file in the parent repository directly (or use a script to regenerate the patch cleanly), ensuring that the submodule state remains clean (using `git restore . && git clean -fdx`) before creating the Pull Request.

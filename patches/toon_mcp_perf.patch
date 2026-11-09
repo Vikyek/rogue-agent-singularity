@@ -14,7 +14,7 @@ index 2a3069d..1b65f1d 100644
 +        if not valid_items:
              return 0.0
 
-+        # Fast path for perfectly homogeneous arrays
++        # Fast path: check if all items have exactly the same keys using fast dict_keys equality
 +        first_keys = valid_items[0].keys()
 +        if all(item.keys() == first_keys for item in valid_items):
 +            return 1.0
@@ -36,12 +36,9 @@ index 6fa0fd0..a93915a 100644
 -        if all(isinstance(item, dict) for item in arr):
 -            key_sets = [set(item.keys()) for item in arr]
 -            if len({tuple(sorted(ks)) for ks in key_sets}) == 1:
-+        # Optimization: use fast dict_keys comparison instead of sets and tuples to avoid O(N) redundant allocations
-+        first_item = arr[0]
-+        if isinstance(first_item, dict):
-+            first_keys = first_item.keys()
-+            # Fast fail check if all items are dicts with the same keys as the first item
-+            if all(isinstance(item, dict) and item.keys() == first_keys for item in arr):
++        if all(isinstance(item, dict) for item in arr):
++            first_keys = arr[0].keys()
++            if all(item.keys() == first_keys for item in arr):
                  # All objects have identical keys — encode as schema + value rows
 -                keys = sorted(arr[0].keys())
 +                keys = sorted(first_keys)
