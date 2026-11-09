@@ -2,3 +2,15 @@ package.json
 .codegraph/
 *.log
 .vault_credentials.env
+
+namcap-master.tar.gz
+namcap-master/
+pkg/
+src/
+*.pkg.tar.*
+
+jules-vanager/
+rogue-agent-singularity/
+agv-syncengine/
+toon-mcp/
+agv-dispatcher/
