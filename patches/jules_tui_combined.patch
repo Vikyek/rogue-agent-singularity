@@ -1,6 +1,8 @@
---- a/agv-dispatcher/modules/jules-vanager/jules_tui.py
-+++ b/agv-dispatcher/modules/jules-vanager/jules_tui.py
-@@ -102,9 +102,9 @@
+diff --git a/jules_tui.py b/jules_tui.py
+index cc0f53c..3e553da 100755
+--- a/jules_tui.py
++++ b/jules_tui.py
+@@ -102,9 +102,9 @@ def draw_menu(stdscr):
 
          if key in (ord('q'), ord('Q')):
              break
@@ -12,11 +14,11 @@
              selected_idx += 1
          elif key in (ord('r'), ord('R')):
              last_fetch = 0
-@@ -132,11 +132,13 @@
+@@ -132,11 +132,13 @@ def prompt_reply(stdscr, session_id):
      height, width = stdscr.getmaxyx()
      curses.echo()
      curses.curs_set(1)
-+    prompt_str = f"Enter response for [{session_id[:12]}]: "
++    prompt_str = f"Enter response for [{session_id[:12]}] (empty to cancel): "
      stdscr.addstr(height - 3, 2, " " * (width - 4))
 -    stdscr.addstr(height - 3, 2, f"Enter response for [{session_id[:12]}]: ", curses.color_pair(3) | curses.A_BOLD)
 +    stdscr.addstr(height - 3, 2, prompt_str, curses.color_pair(3) | curses.A_BOLD)

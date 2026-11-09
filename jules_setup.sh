@@ -89,8 +89,20 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
             patch_name=$(basename "$patch_file")
             info "Applying ${C_BOLD}$patch_name${C_RST}..."
 
-            # Apply jules_listener_injection.patch to agv-dispatcher/modules/jules-vanager submodule
-            if [[ "$patch_name" == "jules_listener_injection.patch" || "$patch_name" == "jules_listener_gh_injection.patch" || "$patch_name" == jules-tui-*.patch || "$patch_name" == "jules_manager.patch" ]]; then
+            # Apply patches to agv-dispatcher/modules/jules-vanager submodule
+            if [[ "$patch_name" == "jules_manager.patch" ]]; then
+                if (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p3 --reverse --dry-run < "$patch_file" >/dev/null 2>&1); then
+                    info "Patch ${C_BOLD}$patch_name${C_RST} might already be applied."
+                else
+                    (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p3 --forward < "$patch_file") || { error "Failed to apply ${C_BOLD}$patch_name${C_RST}"; return 1 2>/dev/null || exit 1; }
+                fi
+            elif [[ "$patch_name" == "jules_tui_combined.patch" ]]; then
+                if (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --reverse --dry-run < "$patch_file" >/dev/null 2>&1); then
+                    info "Patch ${C_BOLD}$patch_name${C_RST} might already be applied."
+                else
+                    (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --forward < "$patch_file") || { error "Failed to apply ${C_BOLD}$patch_name${C_RST}"; return 1 2>/dev/null || exit 1; }
+                fi
+            elif [[ "$patch_name" == "jules_listener_injection.patch" || "$patch_name" == "jules_listener_gh_injection.patch" || "$patch_name" == jules-tui-*.patch || "$patch_name" == "fix_jules_listener_option_injection.patch" ]]; then
                 if (cd "$SCRIPT_DIR/agv-dispatcher/modules/jules-vanager" && patch -p1 --reverse --dry-run < "$patch_file" >/dev/null 2>&1); then
                     info "Patch ${C_BOLD}$patch_name${C_RST} might already be applied."
                 else
@@ -98,8 +110,8 @@ if [ -d "$SCRIPT_DIR/patches" ]; then
                 fi
             fi
 
-            # Apply toon_mcp_perf.patch to toon-mcp submodule
-            if [[ "$patch_name" == "toon_mcp_perf.patch" || "$patch_name" == "toon_mcp_perf_iteration.patch" ]]; then
+            # Apply patches to toon-mcp submodule
+            if [[ "$patch_name" == "toon_mcp_perf_iteration.patch" ]]; then
                 (cd "$SCRIPT_DIR/toon-mcp" && {
                     if git apply --check --reverse "$patch_file" >/dev/null 2>&1; then
                         info "Patch ${C_BOLD}$patch_name${C_RST} might already be applied."
