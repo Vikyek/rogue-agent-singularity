@@ -1,0 +1,26 @@
+--- a/src/toon_converter.py
++++ b/src/toon_converter.py
+@@ -106,14 +106,15 @@
+         return json.dumps(json_data, indent=2)
+
+     def _build_ref_cache(self, data: Any) -> None:
+-        """Traverse data and collect key frequencies for aggressive-mode abbreviation."""
+-        if isinstance(data, dict):
+-            for key, value in data.items():
+-                self.key_freq[key] += 1
+-                self._build_ref_cache(value)
+-        elif isinstance(data, list):
+-            for item in data:
+-                self._build_ref_cache(item)
++        """Traverse data iteratively and collect key frequencies for aggressive-mode abbreviation."""
++        stack = [data]
++        while stack:
++            current = stack.pop()
++            if isinstance(current, dict):
++                self.key_freq.update(current.keys())
++                stack.extend(current.values())
++            elif isinstance(current, list):
++                stack.extend(current)
+
+     def _build_custom_abbrev(self) -> Dict[str, str]:
+         """

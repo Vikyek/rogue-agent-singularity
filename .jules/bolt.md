@@ -32,3 +32,6 @@
 ## 2026-10-06 - Optimize Dictionary Array Schema Validations
 **Learning:** Checking dictionary schema consistency using set operations (e.g., `set(item.keys())`, `set.union`, `set.intersection`) is slow and allocates significant memory for homogeneous arrays of dictionaries.
 **Action:** Always implement a fast path using native `dict_keys` equality (`item.keys() == first_item.keys()`). This evaluates set-like equality in C, drastically improving runtime for the common case of identical schemas.
+## 2026-10-24 - [Optimize dictionary schema equality and iterative traversals]
+**Learning:** Checking dictionary schema consistency using set mappings (e.g. `[set(item.keys()) for item in arr]`) and Python recursion is slow and allocates significant memory for homogeneous arrays of dictionaries. Dictionaries natively evaluate key equality very fast with `item.keys() == first_item.keys()`. Counting key frequencies deep within nested objects is also much faster via an iterative stack with `Counter.update(current.keys())` rather than deep recursive loops.
+**Action:** When validating dictionary arrays for schema consistency or doing deep traversals to compute metrics like key frequencies, avoid `set` mappings and Python recursion. Instead, implement fast paths using `dict_keys` equality and an iterative traversal stack coupled with `Counter.update()`.
