@@ -53,7 +53,7 @@ is_enabled() {
     local status="${2:-}"
 
     if [ -z "$status" ]; then
-        status=$(git submodule status "$mod" 2>/dev/null || echo "-")
+        status=$(git submodule status -- "$mod" 2>/dev/null || echo "-")
     fi
 
     if [[ "$status" =~ ^- ]]; then
@@ -115,12 +115,12 @@ cmd_enable() {
     if [ "$target" = "all" ]; then
         for mod in "${ALL_MODULES[@]}"; do
             echo "Activating $mod..."
-            git submodule update --init --recursive "$mod"
+            git submodule update --init --recursive -- "$mod"
         done
     else
         local mod="${MODULES[$target]:-$target}"
         echo "Activating $mod..."
-        git submodule update --init --recursive "$mod"
+        git submodule update --init --recursive -- "$mod"
     fi
     cmd_list
 }
@@ -136,12 +136,12 @@ cmd_disable() {
     if [ "$target" = "all" ]; then
         for mod in "${ALL_MODULES[@]}"; do
             echo "Deactivating $mod..."
-            git submodule deinit -f "$mod" 2>/dev/null || true
+            git submodule deinit -f -- "$mod" 2>/dev/null || true
         done
     else
         local mod="${MODULES[$target]:-$target}"
         echo "Deactivating $mod..."
-        git submodule deinit -f "$mod"
+        git submodule deinit -f -- "$mod"
     fi
     cmd_list
 }

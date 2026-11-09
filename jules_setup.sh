@@ -33,6 +33,7 @@ info "Initializing VRAS Environment..."
 if [ ! -f .vault_credentials.env ]; then
     info "Creating .vault_credentials.env from .env.example template..."
     cp .env.example .vault_credentials.env
+    chmod 600 .vault_credentials.env
     warn "Please populate .vault_credentials.env with your keys."
 fi
 
