@@ -81,7 +81,7 @@ vras --help
 
 ## Support & Sponsorship
 
-`rogue-agent-singularity` is authored and maintained by **[Vikyek](https://github.com/Vikyek)** as an independent open-source project. Everything is 100% open-source, telemetry-free, and public.
+`agy-tools` is authored and maintained by **[Vikyek](https://github.com/Vikyek)** as an independent open-source project. Everything is 100% open-source, telemetry-free, and public.
 
 <div align="center">
 
