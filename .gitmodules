@@ -1,6 +1,3 @@
-[submodule "agv-dispatcher"]
-	path = agv-dispatcher
-	url = https://github.com/Vikyek/agv-dispatcher.git
 [submodule "agv-syncengine"]
 	path = agv-syncengine
 	url = https://github.com/Vikyek/agv-syncengine.git
@@ -10,3 +7,6 @@
 [submodule "jules-vanager"]
 	path = jules-vanager
 	url = https://github.com/Vikyek/jules-vanager.git
+[submodule "vorchestrator"]
+	path = vorchestrator
+	url = https://github.com/Vikyek/vorchestrator.git
